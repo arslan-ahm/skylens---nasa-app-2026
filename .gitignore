@@ -1,0 +1,13 @@
+# Secrets
+.env*
+app/.env.json
+!app/.env.example.json
+*.keystore
+*.jks
+
+# Editors / OS
+.idea/
+.DS_Store
+
+# Local scratch
+/scratch/
