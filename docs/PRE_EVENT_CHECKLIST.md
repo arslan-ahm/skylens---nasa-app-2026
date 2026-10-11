@@ -50,7 +50,8 @@ Install the APK **from the CI artifact** (Actions → latest run → `skylens-de
 
 ## 2. NASA and open-data resilience
 
-- [ ] Each developer has a personal key from https://api.nasa.gov in `app/.env.json`, copied from `.env.example.json`. Check with `git status` that the file is untracked.
+- [x] Personal key set up and verified (2,000 requests/hour) in the lead's `app/.env.json`.
+- [ ] Each other developer has a personal key from https://api.nasa.gov in `app/.env.json`, copied from `.env.example.json`. Check with `git status` that the file is untracked.
 - [ ] Dev Lab home shows **NASA key: Own**, not Demo.
 - [ ] Dev Lab → NASA & open data: APOD, NeoWs, DONKI, Image Library and Open-Meteo each load and show source, time and licence.
 - [ ] Airplane mode with a warm cache: cards show **"Offline — showing saved data"** with the saved time.
@@ -77,10 +78,10 @@ Already automated (`flutter test`): Meeus worked examples, Greenwich solstice ri
 
 ## 5. Build and deployment
 
-- [ ] **Push to GitHub.** No remote exists yet. Create an empty repository, then run `git remote add origin <url> && git push -u origin main --tags`.
+- [x] **Pushed to GitHub:** https://github.com/arslan-ahm/skylens---nasa-app-2026 (SSH, no-reply commit identity).
 - [ ] Settings → Pages → Source: **GitHub Actions**.
 - [ ] CI is green on `main`: analyze, test, web, APK, Pages.
-- [ ] Open the Pages URL on a phone and on a desktop.
+- [ ] Open https://arslan-ahm.github.io/skylens---nasa-app-2026/ on a phone and on a desktop.
 - [ ] A teammate does a fresh clone on their machine, then runs `flutter pub get && flutter analyze && flutter test && flutter build web && flutter build apk --debug`. Nothing should depend on local files or keys.
 
 Clean-clone build verified locally on 2026-10-11: analyze, 39 tests, web release and debug APK all passed from a fresh `git clone`. The changes made after that clone also pass analyze and all 50 tests, but haven't had their own clean-clone build.
@@ -90,7 +91,7 @@ Clean-clone build verified locally on 2026-10-11: analyze, 39 tests, web release
 - [x] Licence: MIT (OSI-approved).
 - [x] Package and asset licences reviewed: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). No GPL.
 - [x] Git history scanned for keys, personal paths and phone numbers. None found.
-- [ ] **Commit author identity:** history currently shows one personal work email. Decide whether that's fine for a public repo **before the first push**.
+- [x] Commit identity: GitHub no-reply address only (history rewritten before the first push).
 - [x] Design doc is SkyLens's own: [DESIGN_TOKENS.md](DESIGN_TOKENS.md) (no third-party branding).
 - [ ] [PREPARED_BEFORE_EVENT.md](PREPARED_BEFORE_EVENT.md) is accurate and linked from the README.
 

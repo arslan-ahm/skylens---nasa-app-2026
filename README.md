@@ -1,5 +1,7 @@
 # SkyLens
 
+[![CI](https://github.com/arslan-ahm/skylens---nasa-app-2026/actions/workflows/ci.yml/badge.svg)](https://github.com/arslan-ahm/skylens---nasa-app-2026/actions/workflows/ci.yml)
+
 A free, cross-platform personal observatory: sky map, AR sky view, Tonight's Sky, observation planner and logbook, NASA data, and a pathway into citizen science.
 
 > **Pre-hackathon status:** This repo holds only reusable infrastructure built before NASA Space Apps Challenge 2026. Challenge-specific work starts when the event opens. See [docs/PREPARED_BEFORE_EVENT.md](docs/PREPARED_BEFORE_EVENT.md) for the full disclosure, and [docs/PRE_EVENT_CHECKLIST.md](docs/PRE_EVENT_CHECKLIST.md) for what's left to test before the event.
@@ -92,6 +94,7 @@ The Dev Lab stays in the app as a debug menu. The product shell is built on top 
 Prerequisites: Flutter 3.47.x (stable), plus Android Studio/Xcode for device builds.
 
 ```bash
+git clone git@github.com:arslan-ahm/skylens---nasa-app-2026.git && cd skylens---nasa-app-2026
 cd app && flutter pub get && flutter run          # run on a connected device
 flutter run -d chrome --dart-define=DATA_MODE=mock # web, offline mock data
 flutter test                                       # unit tests (astro engine vs. Meeus examples)
@@ -119,7 +122,11 @@ node app/tool/build_sky_catalog.mjs <hyg.csv> <lines.json> <constellations.json>
 
 ## Demo
 
-> TODO (hackathon day): Link to the demo video, the live web build (GitHub Pages), and the APK.
+- **Live web build (Dev Lab, mock data):** https://arslan-ahm.github.io/skylens---nasa-app-2026/
+- **Android APK:** [latest CI run](https://github.com/arslan-ahm/skylens---nasa-app-2026/actions/workflows/ci.yml) → Artifacts → `skylens-debug-apk`
+- **Pre-event baseline:** [`pre-event-baseline`](https://github.com/arslan-ahm/skylens---nasa-app-2026/tree/pre-event-baseline). Compare: [`pre-event-baseline...main`](https://github.com/arslan-ahm/skylens---nasa-app-2026/compare/pre-event-baseline...main)
+
+> TODO (hackathon day): Link to the demo video.
 
 ## Impact
 
