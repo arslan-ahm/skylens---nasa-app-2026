@@ -26,6 +26,8 @@ class _FakeAdapter implements HttpClientAdapter {
 
   String? body;
   String contentType = 'application/json';
+  int status = 200;
+  bool timeout = false;
   int calls = 0;
 
   @override
@@ -35,12 +37,18 @@ class _FakeAdapter implements HttpClientAdapter {
     Future<void>? _,
   ) async {
     calls++;
+    if (timeout) {
+      throw DioException.connectionTimeout(
+        requestOptions: o,
+        timeout: const Duration(seconds: 8),
+      );
+    }
     if (body == null) {
       throw DioException.connectionError(requestOptions: o, reason: 'offline');
     }
     return ResponseBody.fromString(
       body!,
-      200,
+      status,
       headers: {
         Headers.contentTypeHeader: [contentType],
       },
@@ -171,6 +179,85 @@ void main() {
       );
       expect(r.provenance.origin, DataOrigin.mock);
       expect(cache.isEmpty, isTrue);
+    });
+  });
+
+  group('CachedFetcher failure modes', () {
+    late _FakeAdapter adapter;
+    late CachedFetcher fetcher;
+    final prov = DataProvenance(source: 'Test', fetchedAt: DateTime(2026));
+
+    setUp(() async {
+      final cache = await Hive.openBox<dynamic>(
+        'fail_${DateTime.now().microsecondsSinceEpoch}',
+      );
+      adapter = _FakeAdapter('{"error": "x"}');
+      fetcher = CachedFetcher(
+        Dio()..httpClientAdapter = adapter,
+        cache,
+        bundle: _DiskBundle(),
+      );
+    });
+
+    Future<Sourced<dynamic>> fetch(String path, {String? mock}) =>
+        fetcher.getJson(
+          url: 'https://x.test/$path',
+          query: {'api_key': 'SECRET'},
+          provenance: prov,
+          mockAsset: mock,
+        );
+
+    for (final (status, reason) in [
+      (403, 'API key rejected'),
+      (401, 'API key rejected'),
+      (429, 'Rate limit reached'),
+      (503, 'Service unavailable'),
+    ]) {
+      test('HTTP $status falls back to sample data and says why', () async {
+        adapter.status = status;
+        final r = await fetch('s$status', mock: 'assets/mock/neo_feed.json');
+        expect(r.provenance.origin, DataOrigin.mock);
+        expect(r.provenance.note, startsWith(reason));
+      });
+    }
+
+    test('timeout is reported as a slow network', () async {
+      adapter.timeout = true;
+      final r = await fetch('t', mock: 'assets/mock/neo_feed.json');
+      expect(r.provenance.origin, DataOrigin.mock);
+      expect(r.provenance.note, startsWith('Network too slow'));
+    });
+
+    test('stale data is labelled as saved, never as live', () async {
+      adapter.body = '{"ok": 1}';
+      await fetch('stale');
+      adapter.status = 503;
+      final r = await fetcher.getJson(
+        url: 'https://x.test/stale',
+        query: {'api_key': 'SECRET'},
+        provenance: prov,
+        ttl: Duration.zero,
+      );
+      expect(r.provenance.origin, DataOrigin.cache);
+      expect(r.provenance.note, 'Service unavailable — showing saved data');
+    });
+
+    test('first launch, offline, no fixture: the error surfaces', () async {
+      adapter.body = null;
+      await expectLater(fetch('none'), throwsA(isA<DioException>()));
+    });
+
+    test('API keys never end up in cache keys', () async {
+      adapter.body = '{"ok": 1}';
+      final cache = await Hive.openBox<dynamic>(
+        'keys_${DateTime.now().microsecondsSinceEpoch}',
+      );
+      await CachedFetcher(Dio()..httpClientAdapter = adapter, cache).getJson(
+        url: 'https://x.test/k',
+        query: {'api_key': 'SECRET'},
+        provenance: prov,
+      );
+      expect(cache.keys.join(), isNot(contains('SECRET')));
     });
   });
 

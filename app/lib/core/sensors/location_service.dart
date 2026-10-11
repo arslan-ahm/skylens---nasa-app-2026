@@ -39,6 +39,17 @@ class LocationService {
     label: 'Greenwich, UK',
   );
 
+  /// Rejects fixes that would silently put the sky in the wrong place:
+  /// NaN/out-of-range values, the (0, 0) "null island" some devices report
+  /// before a real fix, and accuracies worse than ~50 km.
+  static bool isUsableFix(double lat, double lon, double? accuracyM) {
+    if (!lat.isFinite || !lon.isFinite) return false;
+    if (lat.abs() > 90 || lon.abs() > 180) return false;
+    if (lat == 0 && lon == 0) return false;
+    if (accuracyM != null && accuracyM > 50000) return false;
+    return true;
+  }
+
   Future<ObserverLocation> current() async {
     try {
       if (!await Geolocator.isLocationServiceEnabled()) {
@@ -58,6 +69,9 @@ class LocationService {
           timeLimit: Duration(seconds: 10),
         ),
       );
+      if (!isUsableFix(pos.latitude, pos.longitude, pos.accuracy)) {
+        return await _lastKnownOrFallback();
+      }
       return ObserverLocation(
         Observer(
           latitude: pos.latitude,
@@ -77,7 +91,7 @@ class LocationService {
     if (kIsWeb) return fallback; // not supported on web
     try {
       final p = await Geolocator.getLastKnownPosition();
-      if (p != null) {
+      if (p != null && isUsableFix(p.latitude, p.longitude, p.accuracy)) {
         return ObserverLocation(
           Observer(
             latitude: p.latitude,

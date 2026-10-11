@@ -174,6 +174,31 @@ void main() {
       expect(rs.transitAltitude, closeTo(90 - 51.4769 + 23.44, 0.1));
     });
 
+    test('Islamabad sunrise/sunset (2026-11-14, PKT = UTC+5)', () {
+      // Expected ~06:38 / ~17:05 PKT. Re-check against timeanddate.com.
+      const isb = Observer(latitude: 33.6844, longitude: 73.0479);
+      final rs = engine.riseSetFor('sun', isb, DateTime.utc(2026, 11, 13, 19));
+      expect(
+        rs.rise!.difference(DateTime.utc(2026, 11, 14, 1, 38)).inSeconds.abs(),
+        lessThan(180),
+      );
+      expect(
+        rs.set!.difference(DateTime.utc(2026, 11, 14, 12, 5)).inSeconds.abs(),
+        lessThan(180),
+      );
+    });
+
+    test('same instant in local time and UTC gives the same sky', () {
+      final utc = DateTime.utc(2026, 11, 14, 15);
+      final local = utc.toLocal();
+      expect(julianDate(local), julianDate(utc));
+      const isb = Observer(latitude: 33.6844, longitude: 73.0479);
+      expect(
+        engine.compute(isb, local).objects.first.horizontal.alt,
+        engine.compute(isb, utc).objects.first.horizontal.alt,
+      );
+    });
+
     test('midnight sun is reported as always up', () {
       const tromso = Observer(latitude: 69.65, longitude: 18.96);
       final rs = engine.riseSetFor('sun', tromso, DateTime.utc(2026, 6, 21));

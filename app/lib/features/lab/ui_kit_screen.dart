@@ -72,6 +72,14 @@ class _UiKitScreenState extends ConsumerState<UiKitScreen> {
                   notifier.update((x) => x.copyWith(textScale: v)),
             ),
           ),
+          section(
+            'Licences',
+            GhostPillButton(
+              label: 'Open-source licences',
+              onPressed: () =>
+                  showLicensePage(context: context, applicationName: 'SkyLens'),
+            ),
+          ),
           const Divider(),
           const SizedBox(height: 40),
 

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:skylens/core/sensors/location_service.dart';
 import 'package:skylens/core/astro/astro_math.dart';
 import 'package:skylens/core/astro/coordinates.dart';
 import 'package:skylens/core/sensors/pointing_math.dart';
@@ -100,5 +101,16 @@ void main() {
       f.add(const Vec3(1, 2, 3));
     }
     expect(f.value!.x, closeTo(1, 1e-6));
+  });
+
+  test('implausible GPS fixes are rejected', () {
+    bool ok(double la, double lo, [double? acc]) =>
+        LocationService.isUsableFix(la, lo, acc);
+    expect(ok(33.68, 73.05, 15), isTrue);
+    expect(ok(0, 0), isFalse); // "null island" before a real fix
+    expect(ok(double.nan, 73), isFalse);
+    expect(ok(91, 73), isFalse);
+    expect(ok(33, 181), isFalse);
+    expect(ok(33.68, 73.05, 120000), isFalse);
   });
 }

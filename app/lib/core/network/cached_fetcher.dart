@@ -75,13 +75,14 @@ class CachedFetcher {
     } on Exception catch (e) {
       if (e is! DioException && e is! FormatException) rethrow;
       debugPrint('CachedFetcher: $e for $cacheKey');
+      final reason = failureReason(e);
       if (cached != null) {
         return Sourced(
           jsonDecode(cached['body'] as String),
           provenance.copyWith(
             origin: DataOrigin.cache,
             fetchedAt: cachedAt,
-            note: 'Offline — showing saved data',
+            note: '$reason — showing saved data',
           ),
         );
       }
@@ -89,7 +90,7 @@ class CachedFetcher {
         return _mock(
           mockAsset,
           provenance,
-          note: 'Offline — showing sample data',
+          note: '$reason — showing sample data',
         );
       }
       rethrow;
@@ -110,6 +111,25 @@ class CachedFetcher {
         note: note ?? 'Sample data',
       ),
     );
+  }
+
+  /// Short, user-facing reason a request failed, so a fallback card can say
+  /// what to do next (fix the key, wait, or reconnect) instead of always
+  /// claiming to be offline.
+  static String failureReason(Object e) {
+    if (e is FormatException) return 'Service changed or unavailable';
+    if (e is! DioException) return 'Request failed';
+    final code = e.response?.statusCode;
+    if (code == 401 || code == 403) return 'API key rejected';
+    if (code == 429) return 'Rate limit reached';
+    if (code != null && code >= 500) return 'Service unavailable';
+    if (code != null) return 'Request failed ($code)';
+    return switch (e.type) {
+      DioExceptionType.connectionTimeout ||
+      DioExceptionType.receiveTimeout ||
+      DioExceptionType.sendTimeout => 'Network too slow',
+      _ => 'Offline',
+    };
   }
 
   static Map<String, String>? _stringify(Map<String, dynamic>? q) =>
