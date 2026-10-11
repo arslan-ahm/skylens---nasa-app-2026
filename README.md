@@ -2,7 +2,7 @@
 
 A free, cross-platform personal observatory: sky map, AR sky view, Tonight's Sky, observation planner and logbook, NASA data, and a pathway into citizen science.
 
-> **Pre-hackathon status:** This repo holds only reusable infrastructure built before NASA Space Apps Challenge 2026. Challenge-specific work starts when the event opens. See [docs/PREPARED_BEFORE_EVENT.md](docs/PREPARED_BEFORE_EVENT.md) for the full disclosure.
+> **Pre-hackathon status:** This repo holds only reusable infrastructure built before NASA Space Apps Challenge 2026. Challenge-specific work starts when the event opens. See [docs/PREPARED_BEFORE_EVENT.md](docs/PREPARED_BEFORE_EVENT.md) for the full disclosure, and [docs/PRE_EVENT_CHECKLIST.md](docs/PRE_EVENT_CHECKLIST.md) for what's left to test before the event.
 
 **Honest positioning:** SkyLens is not a telescope and makes no discovery claims. Any AI feature only explains verified data and cites its sources.
 
@@ -164,4 +164,5 @@ See [docs/TEAM_ROLES.md](docs/TEAM_ROLES.md).
 - Weather data: Open-Meteo.com, CC BY 4.0
 - Typeface: Geist by Vercel, SIL Open Font License 1.1 (`app/assets/fonts/Geist-OFL.txt`)
 - Icons in the beginner guide deck: Lucide, ISC License
+- Full package, asset and data licence review: [docs/THIRD_PARTY_NOTICES.md](docs/THIRD_PARTY_NOTICES.md). Licence texts are also in the app (Dev Lab → UI kit → Open-source licences).
 - This project is not endorsed by NASA.

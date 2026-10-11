@@ -15,7 +15,7 @@ flutter run -d chrome --dart-define=DATA_MODE=mock
 - [ ] Each dev has a personal NASA key from https://api.nasa.gov in `app/.env.json` (copy `app/.env.example.json`). Never commit it.
 - [ ] Open the Dev Lab on at least one Android and one iOS/web target. Check sensors, sky table, pointing, and NASA data.
 - [ ] CI is green on `main` and GitHub Pages deploys.
-- [ ] Tag the pre-event baseline: `git tag pre-event-baseline && git push --tags`.
+- [ ] Confirm `pre-event-baseline` is on GitHub (`git ls-remote --tags origin`). Its final position is set at the Nov 13 freeze; see [PRE_EVENT_CHECKLIST.md](PRE_EVENT_CHECKLIST.md).
 - [ ] Fill in the ownership grid in [TEAM_ROLES.md](TEAM_ROLES.md).
 
 ## Timeline (from the SkyLens plan, mapped to this repo)
