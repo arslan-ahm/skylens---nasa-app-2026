@@ -1,0 +1,18 @@
+{
+  "v": 4,
+  "createdOnFiles": {"v": 1, "at": "2026-10-11T11:30:00Z"},
+  "lists": "css",
+  "title": "SkyLens Beginner Guide",
+  "cover": "cover",
+  "order": ["cover", "what", "honest", "journey", "open", "tonight", "ar", "tap", "map", "log", "engine", "pointing", "data", "everyone", "contribute", "accuracy", "close"],
+  "sections": {
+    "intro": {"description": "What SkyLens is, and what it honestly is not", "start": "cover"},
+    "night": {"description": "A beginner's first night with SkyLens, screen by screen", "start": "journey"},
+    "how": {"description": "How SkyLens works behind the screen, in plain language", "start": "engine"},
+    "beyond": {"description": "Built for everyone, from first look to real science", "start": "everyone"}
+  },
+  "faces": {
+    "geist": {"family": "Geist", "href": "https://fonts.googleapis.com/css2?family=Geist:wght@400&display=swap"}
+  },
+  "designSystems": []
+}

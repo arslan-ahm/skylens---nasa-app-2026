@@ -1,0 +1,37 @@
+<section id="pointing" data-transition="push" style="background:#000000;color:#FFFFFF;font-family:Geist, Arial, sans-serif;padding:168px 128px 128px;display:flex;flex-direction:column;gap:28px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:88px;background:#181818;border-bottom:1px solid #333333;display:flex;align-items:center;justify-content:space-between;padding:0 128px"><p style="font-size:26px;letter-spacing:6px">SKYLENS</p><div style="display:flex;gap:56px"><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Intro</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">A night out</p><p style="font-size:24px;letter-spacing:0.6px">How it works</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Beyond</p></div><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Beginner's guide  ›</p></div>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#807F7F">05 — How it works</p>
+<h2 style="font-size:72px;font-weight:400;line-height:1.13;letter-spacing:2.9px;width:1500px">How does the phone know where you are pointing?</h2>
+<div data-build-in="rise order 1" style="position:absolute;left:128px;top:460px;width:840px;background:#1E1F20;border-radius:20px;padding:28px 32px;display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17V3" /><path d="m6 11 6 6 6-6" /><path d="M19 21H5" /></g></svg><p style="font-size:28px;line-height:1.45;letter-spacing:0.7px;color:#807F7F"><span style="color:#FFFFFF">A gravity sensor</span> feels which way is down, so it knows how high you are aiming.</p></div>
+<div data-build-in="rise order 2" style="position:absolute;left:128px;top:612px;width:840px;background:#1E1F20;border-radius:20px;padding:28px 32px;display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" /><circle cx="12" cy="12" r="10" /></g></svg><p style="font-size:28px;line-height:1.45;letter-spacing:0.7px;color:#807F7F"><span style="color:#FFFFFF">A compass</span> feels the Earth's magnetic north, so it knows which way you face.</p></div>
+<div data-build-in="rise order 3" style="position:absolute;left:128px;top:764px;width:840px;border:1px solid #333333;border-radius:20px;padding:28px 32px;display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></g></svg><p style="font-size:28px;line-height:1.45;letter-spacing:0.7px;color:#807F7F"><span style="color:#FFFFFF">Compasses wander</span> near metal. Line up the Moon once and SkyLens corrects itself.</p></div>
+<x-embed data-build-in="fade order 1" style="position:absolute;left:1032px;top:420px;width:760px;height:500px"><style>*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%;background:transparent;overflow:hidden;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#fff;letter-spacing:.02em}
+.box{position:absolute;inset:0;border-radius:32px;background:#1e1f20;overflow:hidden}
+canvas{position:absolute;left:0;top:0}
+.ro{position:absolute;left:24px;right:24px;bottom:20px;border:1px solid #333;border-radius:20px;padding:12px;text-align:center;font-size:26px}
+.ro b{font-weight:400;color:#22e2a8}
+</style>
+<div class="box"><canvas id="c" width="1520" height="1000" style="width:760px;height:500px"></canvas><div class="ro" id="ro"></div></div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d'),ro=document.getElementById('ro');x.scale(2,2);
+const pts='N NE E SE S SW W NW'.split(' ');let t=0;
+function arrow(x1,y1,x2,y2,col){x.strokeStyle=col;x.fillStyle=col;x.lineWidth=1.5;x.beginPath();x.moveTo(x1,y1);x.lineTo(x2,y2);x.stroke();const a=Math.atan2(y2-y1,x2-x1);x.beginPath();x.moveTo(x2,y2);x.lineTo(x2-13*Math.cos(a-.4),y2-13*Math.sin(a-.4));x.lineTo(x2-13*Math.cos(a+.4),y2-13*Math.sin(a+.4));x.fill()}
+function f(){t+=.012;x.clearRect(0,0,760,500);
+const alt=30+22*Math.sin(t),az=(135+40*Math.sin(t*.6)+360)%360;
+x.setLineDash([6,8]);x.strokeStyle='#807f7f';x.lineWidth=1.5;x.beginPath();x.moveTo(0,370);x.lineTo(440,370);x.stroke();x.setLineDash([]);
+x.fillStyle='#807f7f';x.font='24px system-ui';x.fillText('HORIZON',24,358);
+const px=150,py=320,a=-alt*Math.PI/180;
+x.strokeStyle='rgba(255,255,255,.35)';x.lineWidth=1;x.setLineDash([2,6]);x.beginPath();x.moveTo(px,py);x.lineTo(px+400*Math.cos(a),py+400*Math.sin(a));x.stroke();x.setLineDash([]);
+x.save();x.translate(px,py);x.rotate(a+Math.PI/2);x.fillStyle='#000';x.strokeStyle='#fff';x.lineWidth=1.5;x.beginPath();x.roundRect(-16,-54,32,108,9);x.fill();x.stroke();x.restore();
+x.strokeStyle='#085556';x.lineWidth=2;x.beginPath();x.arc(px,py,76,a,0);x.stroke();
+x.fillStyle='#fff';x.font='26px system-ui';x.fillText(Math.round(alt)+'° up',px+90,py-12);
+arrow(64,150,64,250,'#fff');x.fillStyle='#807f7f';x.font='24px system-ui';x.fillText('GRAVITY',24,136);
+const cx=600,cy=170,r=100;x.strokeStyle='#807f7f';x.lineWidth=1;x.beginPath();x.arc(cx,cy,r,0,6.283);x.stroke();x.strokeStyle='#085556';x.beginPath();x.arc(cx,cy,r-24,0,6.283);x.stroke();
+x.fillStyle='#fff';x.font='24px system-ui';x.textAlign='center';x.fillText('N',cx,cy-r+28);x.fillText('S',cx,cy+r-10);x.fillText('E',cx+r-20,cy+8);x.fillText('W',cx-r+20,cy+8);
+const b=(az-90)*Math.PI/180;arrow(cx,cy,cx+(r-32)*Math.cos(b),cy+(r-32)*Math.sin(b),'#22e2a8');
+x.fillStyle='#807f7f';x.fillText('COMPASS',cx,cy+r+32);x.textAlign='left';
+ro.innerHTML='Aiming <b>'+Math.round(az)+'° '+pts[Math.round(az/45)%8]+'</b>, <b>'+Math.round(alt)+'°</b> above the horizon';
+requestAnimationFrame(f)}f();
+</script></x-embed>
+<aside>The second question: how does the phone know where you are pointing it? Every smartphone has two small sensors that do this. A gravity sensor feels which way is down, so the phone knows how steeply you are tilting it, which is how high in the sky you are aiming. A compass feels the Earth's magnetic field, so the phone knows which direction you are facing. Put the two together and you get an exact direction in the sky, which SkyLens matches with the sky calculator from the last slide. One honest catch: phone compasses get confused near metal, cars or magnetic phone cases. So SkyLens lets you line up the Moon or a bright planet once, tap calibrate, and it corrects itself.</aside>
+</section>

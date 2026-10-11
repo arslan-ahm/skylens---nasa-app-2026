@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SkyLens Beginner Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400&display=swap">
+<style>
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:0 0}
+section{position:absolute;inset:0;box-sizing:border-box;overflow:hidden;opacity:0;visibility:hidden;transition:opacity .6s,visibility .6s}
+section.active{opacity:1;visibility:visible}
+section *{margin:0;box-sizing:border-box}
+section ul{padding-left:1.2em}
+section h1,section h2,section h3{font-weight:400}
+[data-build]{opacity:0}
+.active [data-build]{animation:.8s cubic-bezier(.2,.8,.2,1) both}
+.active [data-build=rise]{animation-name:rise}.active [data-build=fade]{animation-name:fade}
+.active [data-build=pop]{animation-name:pop}.active [data-build=left]{animation-name:lft}
+.active [data-build=right]{animation-name:rgt}
+@keyframes rise{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+@keyframes lft{from{opacity:0;transform:translateX(-60px)}to{opacity:1;transform:none}}
+@keyframes rgt{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:none}}
+#stepbar{transition:width .8s cubic-bezier(.2,.8,.2,1)}
+#hud{position:fixed;right:16px;bottom:14px;display:flex;gap:8px;align-items:center;font:400 13px/1 Geist,system-ui,sans-serif;letter-spacing:.04em;color:#807f7f;user-select:none;opacity:.35;transition:opacity .3s}
+#hud:hover{opacity:1}
+#hud button{font:inherit;letter-spacing:inherit;color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(12px);border-radius:20px;padding:8px 16px;cursor:pointer}
+#hud button:hover{border-color:#fff}
+body.light #hud{color:#666}body.light #hud button{color:#000;background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.2)}
+#bar{position:fixed;left:0;bottom:0;height:2px;background:#22e2a8;transition:width .5s}
+</style></head><body>
+<div id="stage"><section id="cover" data-transition="fade" style="background:#000000;color:#FFFFFF;font-family:Geist, Arial, sans-serif;padding:168px 128px 128px;display:flex;flex-direction:column;justify-content:center;gap:40px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:88px;background:#181818;border-bottom:1px solid #333333;display:flex;align-items:center;justify-content:space-between;padding:0 128px"><p style="font-size:26px;letter-spacing:6px">SKYLENS</p><div style="display:flex;gap:56px"><p style="font-size:24px;letter-spacing:0.6px">Intro</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">A night out</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">How it works</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Beyond</p></div><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Beginner's guide  ›</p></div>
+<iframe sandbox="allow-scripts" srcdoc="&lt;style&gt;html,body{margin:0;height:100%;background:transparent;overflow:hidden}canvas{display:block}&lt;/style&gt;&lt;canvas id=&quot;c&quot;&gt;&lt;/canvas&gt;&lt;script&gt;
+const c=document.getElementById(&#x27;c&#x27;),x=c.getContext(&#x27;2d&#x27;);let W,H,S=[];
+function rs(){W=c.width=innerWidth;H=c.height=innerHeight;S=[];for(let i=0;i&lt;120;i++){const a=Math.random()*6.283,d=Math.sqrt(Math.random())*Math.min(W,H)*.46;S.push({a,d,r:Math.random()*1.3+.3,p:Math.random()*6.28})}}
+rs();onresize=rs;
+const N=[[180,.9,0,&#x27;MOON&#x27;],[260,.55,2.3,&#x27;JUPITER&#x27;],[340,.35,4.2,&#x27;ISS&#x27;],[260,.55,5.4,&#x27;&#x27;],[340,.35,1.2,&#x27;SATURN&#x27;]];
+let t=0;
+function f(){t++;x.clearRect(0,0,W,H);const cx=W/2,cy=H/2,k=Math.min(W,H)/992;
+const g=x.createRadialGradient(cx,cy,0,cx,cy,440*k);g.addColorStop(0,&#x27;rgba(10,33,66,.9)&#x27;);g.addColorStop(1,&#x27;rgba(10,33,66,0)&#x27;);x.fillStyle=g;x.beginPath();x.arc(cx,cy,440*k,0,6.283);x.fill();
+for(const s of S){x.globalAlpha=.25+.35*(.5+.5*Math.sin(s.p+t*.02));x.fillStyle=&#x27;#fff&#x27;;x.beginPath();x.arc(cx+Math.cos(s.a)*s.d,cy+Math.sin(s.a)*s.d,s.r,0,6.283);x.fill()}
+x.globalAlpha=1;x.strokeStyle=&#x27;#085556&#x27;;x.lineWidth=1.5;[180,260,340].forEach(r=&gt;{x.beginPath();x.arc(cx,cy,r*k,0,6.283);x.stroke()});
+x.setLineDash([3,9]);x.strokeStyle=&#x27;#333&#x27;;x.beginPath();x.arc(cx,cy,420*k,0,6.283);x.stroke();x.setLineDash([]);
+x.fillStyle=&#x27;#fff&#x27;;x.beginPath();x.arc(cx,cy,7,0,6.283);x.fill();x.font=&#x27;24px system-ui,sans-serif&#x27;;x.fillText(&#x27;YOU&#x27;,cx+16,cy+8);
+N.forEach((n,i)=&gt;{const a=n[2]+t*n[1]*.0012,px=cx+Math.cos(a)*n[0]*k,py=cy+Math.sin(a)*n[0]*k,live=n[3]==&#x27;ISS&#x27;;
+if(live){const q=(t%120)/120;x.strokeStyle=&#x27;rgba(34,226,168,&#x27;+(1-q)+&#x27;)&#x27;;x.lineWidth=1.5;x.beginPath();x.arc(px,py,6+q*20,0,6.283);x.stroke()}
+x.fillStyle=live?&#x27;#22e2a8&#x27;:&#x27;#fff&#x27;;x.beginPath();x.arc(px,py,5,0,6.283);x.fill();
+if(n[3]){x.strokeStyle=&#x27;rgba(255,255,255,.5)&#x27;;x.lineWidth=1;x.beginPath();x.moveTo(px+7,py-7);x.lineTo(px+36,py-36);x.lineTo(px+64,py-36);x.stroke();x.fillStyle=&#x27;#fff&#x27;;x.fillText(n[3],px+72,py-28)}});
+requestAnimationFrame(f)}f();
+&lt;/script&gt;" style="position:absolute;left:960px;top:88px;width:960px;height:992px;border:0;background:transparent;color-scheme:normal"></iframe>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#807F7F">A beginner's guide</p>
+<h1 style="font-size:180px;font-weight:400;line-height:1.05;letter-spacing:7px">SkyLens</h1>
+<p style="font-size:34px;line-height:1.6;letter-spacing:0.85px;color:#807F7F;width:760px">Your phone, turned into a guided window to the night sky. Free, honest, and made for first-time stargazers.</p>
+<div style="display:flex"><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Start the tour  ›</p></div>
+<div data-build="fade" data-order="1" style="position:absolute;left:128px;top:880px;width:900px;display:flex;gap:48px;align-items:baseline">
+<p style="font-size:36px;letter-spacing:1.4px;white-space:nowrap">2,865 <span style="color:#807F7F">stars</span></p>
+<p style="font-size:36px;letter-spacing:1.4px;white-space:nowrap">88 <span style="color:#807F7F">constellations</span></p>
+<p style="font-size:36px;letter-spacing:1.4px;white-space:nowrap">0 <span style="color:#807F7F">sign-ups</span></p>
+</div>
+
+</section>
+<section id="what" data-transition="push" style="background:#000000;color:#FFFFFF;font-family:Geist, Arial, sans-serif;padding:168px 128px 128px;display:flex;flex-direction:column;gap:28px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:88px;background:#181818;border-bottom:1px solid #333333;display:flex;align-items:center;justify-content:space-between;padding:0 128px"><p style="font-size:26px;letter-spacing:6px">SKYLENS</p><div style="display:flex;gap:56px"><p style="font-size:24px;letter-spacing:0.6px">Intro</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">A night out</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">How it works</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Beyond</p></div><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Beginner's guide  ›</p></div>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#807F7F">01 — What is SkyLens</p>
+<h2 style="font-size:72px;font-weight:400;line-height:1.13;letter-spacing:2.9px;width:1500px">Point your phone at the sky. SkyLens tells you what you are seeing.</h2>
+<div data-build="rise" data-order="1" style="position:absolute;left:128px;top:500px;width:512px;background:#1E1F20;border-radius:32px;padding:40px;display:flex;flex-direction:column;gap:20px">
+<svg aria-label="" width="40" height="40" viewBox="0 0 40 40"><g transform="scale(1.6667)" fill="none" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><line x1="22" x2="18" y1="12" y2="12" /><line x1="6" x2="2" y1="12" y2="12" /><line x1="12" x2="12" y1="6" y2="2" /><line x1="12" x2="12" y1="22" y2="18" /></g></svg>
+<h3 style="font-size:48px;font-weight:400;letter-spacing:1.2px">Find</h3>
+<p style="font-size:30px;line-height:1.6;letter-spacing:0.75px;color:#807F7F">Names appear on stars, planets and the Moon as you move your phone.</p>
+<p style="font-size:24px;letter-spacing:1px;text-transform:uppercase;color:#807F7F">Sky view</p>
+</div>
+<div data-build="rise" data-order="2" style="position:absolute;left:704px;top:500px;width:512px;background:#1E1F20;border-radius:32px;padding:40px;display:flex;flex-direction:column;gap:20px">
+<svg aria-label="" width="40" height="40" viewBox="0 0 40 40"><g transform="scale(1.6667)" fill="none" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></g></svg>
+<h3 style="font-size:48px;font-weight:400;letter-spacing:1.2px">Understand</h3>
+<p style="font-size:30px;line-height:1.6;letter-spacing:0.75px;color:#807F7F">Tap anything for simple facts, the best time to look, and NASA pictures.</p>
+<p style="font-size:24px;letter-spacing:1px;text-transform:uppercase;color:#807F7F">Object details</p>
+</div>
+<div data-build="rise" data-order="3" style="position:absolute;left:1280px;top:500px;width:512px;background:#1E1F20;border-radius:32px;padding:40px;display:flex;flex-direction:column;gap:20px">
+<svg aria-label="" width="40" height="40" viewBox="0 0 40 40"><g transform="scale(1.6667)" fill="none" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4" /><path d="M2 6h4" /><path d="M2 10h4" /><path d="M2 14h4" /><path d="M2 18h4" /><path d="M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z" /></g></svg>
+<h3 style="font-size:48px;font-weight:400;letter-spacing:1.2px">Remember</h3>
+<p style="font-size:30px;line-height:1.6;letter-spacing:0.75px;color:#807F7F">Save what you saw in your own logbook and share it with real science.</p>
+<p style="font-size:24px;letter-spacing:1px;text-transform:uppercase;color:#807F7F">Logbook</p>
+</div>
+
+</section>
+<section id="honest" data-transition="push" style="background:#000000;color:#FFFFFF;font-family:Geist, Arial, sans-serif;padding:168px 128px 128px;display:flex;flex-direction:column;gap:28px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:88px;background:#181818;border-bottom:1px solid #333333;display:flex;align-items:center;justify-content:space-between;padding:0 128px"><p style="font-size:26px;letter-spacing:6px">SKYLENS</p><div style="display:flex;gap:56px"><p style="font-size:24px;letter-spacing:0.6px">Intro</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">A night out</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">How it works</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Beyond</p></div><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Beginner's guide  ›</p></div>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#807F7F">02 — An honest promise</p>
+<h2 style="font-size:72px;font-weight:400;line-height:1.13;letter-spacing:2.9px">A sky guide, not a magic telescope</h2>
+<div data-build="left" data-order="1" style="position:absolute;left:128px;top:420px;width:800px;background:#1E1F20;border-radius:32px;padding:48px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;gap:20px;align-items:center"><svg aria-label="" width="40" height="40" viewBox="0 0 40 40"><g transform="scale(1.6667)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></g></svg><h3 style="font-size:44px;font-weight:400;letter-spacing:1.1px">SkyLens is</h3></div>
+<ul style="font-size:30px;line-height:1.8;letter-spacing:0.75px">
+<li>A guide that names what you see</li>
+<li>A planner for when and where to look</li>
+<li>A logbook for your observations</li>
+<li>A doorway to real citizen science</li>
+</ul>
+</div>
+<div data-build="right" data-order="2" style="position:absolute;left:992px;top:420px;width:800px;border:1px solid #333333;border-radius:32px;padding:48px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;gap:20px;align-items:center"><svg aria-label="" width="40" height="40" viewBox="0 0 40 40"><g transform="scale(1.6667)" fill="none" stroke="#807F7F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></g></svg><h3 style="font-size:44px;font-weight:400;letter-spacing:1.1px;color:#807F7F">SkyLens is not</h3></div>
+<ul style="font-size:30px;line-height:1.8;letter-spacing:0.75px;color:#807F7F">
+<li>A replacement for a telescope</li>
+<li>Live zoomed-in video of planets</li>
+<li>A promise you will find a new planet</li>
+<li>An AI that makes facts up</li>
+</ul>
+</div>
+
+</section>
+<section id="journey" data-transition="fade" style="background:#000000;color:#FFFFFF;font-family:Geist, Arial, sans-serif;padding:168px 128px 160px;display:flex;flex-direction:column;gap:28px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:88px;background:#181818;border-bottom:1px solid #333333;display:flex;align-items:center;justify-content:space-between;padding:0 128px"><p style="font-size:26px;letter-spacing:6px">SKYLENS</p><div style="display:flex;gap:56px"><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Intro</p><p style="font-size:24px;letter-spacing:0.6px">A night out</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">How it works</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Beyond</p></div><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Beginner's guide  ›</p></div>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#807F7F">03 — A night with SkyLens</p>
+<h2 style="font-size:72px;font-weight:400;line-height:1.13;letter-spacing:2.9px">Six steps from "what is that?" to "I saw it"</h2>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none" viewBox="0 0 1920 1080"><line x1="278.0" y1="555.0" x2="434.0" y2="555.0" stroke="#666666" stroke-width="2.0" stroke-linecap="round"/><polygon points="434.0,555.0 421.4,561.1 421.4,548.9" fill="#666666"/></svg>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none" viewBox="0 0 1920 1080"><line x1="584.0" y1="555.0" x2="735.0" y2="555.0" stroke="#666666" stroke-width="2.0" stroke-linecap="round"/><polygon points="735.0,555.0 722.4,561.1 722.4,548.9" fill="#666666"/></svg>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none" viewBox="0 0 1920 1080"><line x1="885.0" y1="555.0" x2="1035.0" y2="555.0" stroke="#666666" stroke-width="2.0" stroke-linecap="round"/><polygon points="1035.0,555.0 1022.4,561.1 1022.4,548.9" fill="#666666"/></svg>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none" viewBox="0 0 1920 1080"><line x1="1185.0" y1="555.0" x2="1336.0" y2="555.0" stroke="#666666" stroke-width="2.0" stroke-linecap="round"/><polygon points="1336.0,555.0 1323.4,561.1 1323.4,548.9" fill="#666666"/></svg>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none" viewBox="0 0 1920 1080"><line x1="1486.0" y1="555.0" x2="1637.0" y2="555.0" stroke="#666666" stroke-width="2.0" stroke-linecap="round"/><polygon points="1637.0,555.0 1624.4,561.1 1624.4,548.9" fill="#666666"/></svg>
+<div data-build="pop" data-order="1" style="position:absolute;left:128px;top:480px;width:150px;height:150px;border-radius:50%;background:#1E1F20;display:flex;align-items:center;justify-content:center"><svg aria-label="" width="48" height="48" viewBox="0 0 48 48"><g transform="scale(2)" fill="none" stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /><path d="M12 18h.01" /></g></svg></div>
+<div data-build="pop" data-order="2" style="position:absolute;left:434px;top:480px;width:150px;height:150px;border-radius:50%;background:#1E1F20;display:flex;align-items:center;justify-content:center"><svg aria-label="" width="48" height="48" viewBox="0 0 48 48"><g transform="scale(2)" fill="none" stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9" /><path d="M20 3v4" /><path d="M22 5h-4" /></g></svg></div>
+<div data-build="pop" data-order="3" style="position:absolute;left:735px;top:480px;width:150px;height:150px;border-radius:50%;background:#1E1F20;display:flex;align-items:center;justify-content:center"><svg aria-label="" width="48" height="48" viewBox="0 0 48 48"><g transform="scale(2)" fill="none" stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><line x1="22" x2="18" y1="12" y2="12" /><line x1="6" x2="2" y1="12" y2="12" /><line x1="12" x2="12" y1="6" y2="2" /><line x1="12" x2="12" y1="22" y2="18" /></g></svg></div>
+<div data-build="pop" data-order="4" style="position:absolute;left:1035px;top:480px;width:150px;height:150px;border-radius:50%;background:#1E1F20;display:flex;align-items:center;justify-content:center"><svg aria-label="" width="48" height="48" viewBox="0 0 48 48"><g transform="scale(2)" fill="none" stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 14a8 8 0 0 1-8 8" /><path d="M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2" /><path d="M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1" /><path d="M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10" /><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" /></g></svg></div>
+<div data-build="pop" data-order="5" style="position:absolute;left:1336px;top:480px;width:150px;height:150px;border-radius:50%;background:#1E1F20;display:flex;align-items:center;justify-content:center"><svg aria-label="" width="48" height="48" viewBox="0 0 48 48"><g transform="scale(2)" fill="none" stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z" /><path d="M15 5.764v15" /><path d="M9 3.236v15" /></g></svg></div>
+<div data-build="pop" data-order="6" style="position:absolute;left:1637px;top:480px;width:150px;height:150px;border-radius:50%;background:#1E1F20;display:flex;align-items:center;justify-content:center"><svg aria-label="" width="48" height="48" viewBox="0 0 48 48"><g transform="scale(2)" fill="none" stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4" /><path d="M2 6h4" /><path d="M2 10h4" /><path d="M2 14h4" /><path d="M2 18h4" /><path d="M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z" /></g></svg></div>
+<p data-build="fade" data-order="1" style="position:absolute;left:78px;top:662px;width:250px;text-align:center;font-size:24px;letter-spacing:2px;color:#807F7F">01</p>
+<p data-build="fade" data-order="2" style="position:absolute;left:384px;top:662px;width:250px;text-align:center;font-size:24px;letter-spacing:2px;color:#807F7F">02</p>
+<p data-build="fade" data-order="3" style="position:absolute;left:685px;top:662px;width:250px;text-align:center;font-size:24px;letter-spacing:2px;color:#807F7F">03</p>
+<p data-build="fade" data-order="4" style="position:absolute;left:985px;top:662px;width:250px;text-align:center;font-size:24px;letter-spacing:2px;color:#807F7F">04</p>
+<p data-build="fade" data-order="5" style="position:absolute;left:1286px;top:662px;width:250px;text-align:center;font-size:24px;letter-spacing:2px;color:#807F7F">05</p>
+<p data-build="fade" data-order="6" style="position:absolute;left:1587px;top:662px;width:250px;text-align:center;font-size:24px;letter-spacing:2px;color:#807F7F">06</p>
+<p data-build="fade" data-order="1" style="position:absolute;left:78px;top:700px;width:250px;text-align:center;font-size:36px;letter-spacing:1.4px">Open</p>
+<p data-build="fade" data-order="2" style="position:absolute;left:384px;top:700px;width:250px;text-align:center;font-size:36px;letter-spacing:1.4px">Tonight</p>
+<p data-build="fade" data-order="3" style="position:absolute;left:685px;top:700px;width:250px;text-align:center;font-size:36px;letter-spacing:1.4px">Point</p>
+<p data-build="fade" data-order="4" style="position:absolute;left:985px;top:700px;width:250px;text-align:center;font-size:36px;letter-spacing:1.4px">Tap</p>
+<p data-build="fade" data-order="5" style="position:absolute;left:1286px;top:700px;width:250px;text-align:center;font-size:36px;letter-spacing:1.4px">Map</p>
+<p data-build="fade" data-order="6" style="position:absolute;left:1587px;top:700px;width:250px;text-align:center;font-size:36px;letter-spacing:1.4px">Log</p>
+<p data-build="fade" data-order="1" style="position:absolute;left:78px;top:758px;width:250px;text-align:center;font-size:24px;line-height:1.5;letter-spacing:0.6px;color:#807F7F">Allow location, nothing else</p>
+<p data-build="fade" data-order="2" style="position:absolute;left:384px;top:758px;width:250px;text-align:center;font-size:24px;line-height:1.5;letter-spacing:0.6px;color:#807F7F">See what is up right now</p>
+<p data-build="fade" data-order="3" style="position:absolute;left:685px;top:758px;width:250px;text-align:center;font-size:24px;line-height:1.5;letter-spacing:0.6px;color:#807F7F">Labels over the real sky</p>
+<p data-build="fade" data-order="4" style="position:absolute;left:985px;top:758px;width:250px;text-align:center;font-size:24px;line-height:1.5;letter-spacing:0.6px;color:#807F7F">Facts and where to look</p>
+<p data-build="fade" data-order="5" style="position:absolute;left:1286px;top:758px;width:250px;text-align:center;font-size:24px;line-height:1.5;letter-spacing:0.6px;color:#807F7F">Whole sky, any hour</p>
+<p data-build="fade" data-order="6" style="position:absolute;left:1587px;top:758px;width:250px;text-align:center;font-size:24px;line-height:1.5;letter-spacing:0.6px;color:#807F7F">Save it in 30 seconds</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;padding-top:24px;border-top:1px solid #333333;font-size:24px;letter-spacing:0.6px;color:#807F7F">Phone screens on the next slides are animated illustrations. Real results depend on where and when you look.</p>
+
+</section>
+<section id="open" data-transition="fade" style="background:#000000;color:#FFFFFF;font-family:Geist, Arial, sans-serif;padding:168px 128px 128px;display:flex;flex-direction:column;gap:28px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:88px;background:#181818;border-bottom:1px solid #333333;display:flex;align-items:center;justify-content:space-between;padding:0 128px"><p style="font-size:26px;letter-spacing:6px">SKYLENS</p><div style="display:flex;gap:56px"><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Intro</p><p style="font-size:24px;letter-spacing:0.6px">A night out</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">How it works</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Beyond</p></div><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Beginner's guide  ›</p></div>
+<svg aria-label="" style="position:absolute;left:1212px;top:182px" width="700" height="700" viewBox="0 0 700 700"><defs><radialGradient id="w" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#0A2142"/><stop offset="1" stop-color="#0A2142" stop-opacity="0"/></radialGradient></defs><circle cx="350" cy="350" r="340" fill="url(#w)"/><circle cx="350" cy="350" r="340" fill="none" stroke="#333333" stroke-dasharray="4 10"/><circle cx="350" cy="350" r="280" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="350" cy="350" r="210" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="350" cy="350" r="140" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="548" cy="152" r="5" fill="#FFFFFF"/><circle cx="90" cy="460" r="4" fill="#807F7F"/></svg>
+<div style="position:absolute;left:1024px;top:178px;width:144px;display:flex;gap:12px"><div style="width:14px;height:14px;border-radius:50%;background:#FFFFFF"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div></div>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#807F7F">Step 01 — Open</p>
+<h2 style="font-size:72px;font-weight:400;line-height:1.13;letter-spacing:2.9px;width:1040px">Allow location. That is all it needs.</h2>
+<p style="font-size:32px;line-height:1.6;letter-spacing:0.8px;color:#807F7F;width:1000px">With your place and the exact time, SkyLens can work out the whole sky above you.</p>
+<div data-build="rise" data-order="2" style="position:absolute;left:128px;top:600px;width:1040px;background:#1E1F20;border-radius:32px;padding:40px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /><circle cx="12" cy="10" r="3" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">Your place</span> tells it which half of the sky is above you.</p></div>
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">Your time</span> tells it how far the sky has turned.</p></div>
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /><path d="m9 12 2 2 4-4" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">Your privacy:</span> it stays on your phone. No sign-up.</p></div>
+</div>
+<iframe data-build="rise" data-order="1" sandbox="allow-scripts" srcdoc="&lt;style&gt;*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;background:transparent;overflow:hidden;font-family:system-ui,-apple-system,&quot;Segoe UI&quot;,Roboto,sans-serif;color:#fff;letter-spacing:.02em}
+.ph{position:absolute;left:20px;top:2px;width:420px;height:828px;border-radius:66px;background:#000;border:10px solid #181818;outline:1px solid #333;overflow:hidden}
+.nt{position:absolute;top:12px;left:140px;width:120px;height:32px;border-radius:16px;background:#181818;z-index:30}
+.mut{color:#807f7f;font-size:24px;line-height:1.5}
+.s{position:absolute;inset:0;opacity:0;transition:opacity .7s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:36px;text-align:center;background:#000}
+.on{opacity:1}
+.rg{position:relative;width:150px;height:150px}
+.rg i{position:absolute;border:1.5px solid #085556;border-radius:50%}
+.rg b{position:absolute;left:69px;top:69px;width:12px;height:12px;border-radius:50%;background:#fff}
+h1{font-size:44px;font-weight:400;letter-spacing:4px}
+.dlg{background:#1e1f20;border-radius:30px;padding:30px 24px;display:flex;flex-direction:column;gap:16px;width:340px;text-align:left}
+.dlg p.t{font-size:28px;line-height:1.3}
+.btn{border-radius:20px;padding:14px;font-size:24px;text-align:center;position:relative;overflow:hidden}
+.p{border:1px solid #fff}.g{color:#807f7f;border:1px solid #333}
+.rip{position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px;border-radius:50%;background:#fff;opacity:0}
+.go .rip{animation:r .7s ease-out}
+@keyframes r{0%{opacity:.5;transform:scale(1)}100%{opacity:0;transform:scale(16)}}
+.rad{position:relative;width:200px;height:200px}
+.rad span{position:absolute;inset:0;border:1.5px solid #085556;border-radius:50%;animation:p 1.8s infinite ease-out;opacity:0}
+.rad span:nth-child(2){animation-delay:.6s}.rad span:nth-child(3){animation-delay:1.2s}
+@keyframes p{0%{transform:scale(.2);opacity:1}100%{transform:scale(1);opacity:0}}
+.dot{position:absolute;left:92px;top:92px;width:16px;height:16px;border-radius:50%;background:#fff;transition:background .4s}
+.done .dot{background:#22e2a8}.done .rad span{animation:none}
+.ok{display:none;flex-direction:column;gap:14px;align-items:center}.done .ok{display:flex}
+.cta{border:1px solid #fff;border-radius:20px;padding:10px 30px;font-size:24px}
+&lt;/style&gt;
+&lt;div class=&quot;ph&quot;&gt;&lt;div class=&quot;nt&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;s on&quot; id=&quot;a&quot;&gt;&lt;div class=&quot;rg&quot;&gt;&lt;i style=&quot;inset:0&quot;&gt;&lt;/i&gt;&lt;i style=&quot;inset:25px&quot;&gt;&lt;/i&gt;&lt;i style=&quot;inset:50px&quot;&gt;&lt;/i&gt;&lt;b&gt;&lt;/b&gt;&lt;/div&gt;&lt;h1&gt;SKYLENS&lt;/h1&gt;&lt;p class=&quot;mut&quot;&gt;Your guide to the night sky&lt;/p&gt;&lt;/div&gt;
+&lt;div class=&quot;s&quot; id=&quot;b&quot;&gt;&lt;div class=&quot;dlg&quot;&gt;&lt;p class=&quot;t&quot;&gt;Allow SkyLens to use your location?&lt;/p&gt;&lt;p class=&quot;mut&quot;&gt;Only used to work out your sky. Never shared.&lt;/p&gt;&lt;div class=&quot;btn p&quot; id=&quot;bt&quot;&gt;While using the app&lt;span class=&quot;rip&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;btn g&quot;&gt;Don&#x27;t allow&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class=&quot;s&quot; id=&quot;c&quot;&gt;&lt;div class=&quot;rad&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;div class=&quot;dot&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;p class=&quot;mut&quot; id=&quot;ct&quot;&gt;Finding your sky…&lt;/p&gt;&lt;div class=&quot;ok&quot;&gt;&lt;p style=&quot;font-size:30px&quot;&gt;Location found&lt;/p&gt;&lt;p class=&quot;mut&quot;&gt;40.7° N · 74.0° W&lt;/p&gt;&lt;div class=&quot;cta&quot;&gt;See tonight&#x27;s sky  ›&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;
+const $=i=&gt;document.getElementById(i);
+function show(i){[&#x27;a&#x27;,&#x27;b&#x27;,&#x27;c&#x27;].forEach(k=&gt;$(k).classList.toggle(&#x27;on&#x27;,k==i))}
+function loop(){show(&#x27;a&#x27;);$(&#x27;c&#x27;).classList.remove(&#x27;done&#x27;);$(&#x27;ct&#x27;).style.display=&#x27;&#x27;;$(&#x27;bt&#x27;).classList.remove(&#x27;go&#x27;);
+setTimeout(()=&gt;show(&#x27;b&#x27;),2400);setTimeout(()=&gt;$(&#x27;bt&#x27;).classList.add(&#x27;go&#x27;),4600);setTimeout(()=&gt;show(&#x27;c&#x27;),5600);
+setTimeout(()=&gt;{$(&#x27;c&#x27;).classList.add(&#x27;done&#x27;);$(&#x27;ct&#x27;).style.display=&#x27;none&#x27;},8200);setTimeout(loop,11500)}
+loop();
+&lt;/script&gt;" style="position:absolute;left:1332px;top:116px;width:460px;height:832px;border:0;background:transparent;color-scheme:normal"></iframe>
+
+</section>
+<section id="tonight" data-transition="fade" style="background:#000000;color:#FFFFFF;font-family:Geist, Arial, sans-serif;padding:168px 128px 128px;display:flex;flex-direction:column;gap:28px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:88px;background:#181818;border-bottom:1px solid #333333;display:flex;align-items:center;justify-content:space-between;padding:0 128px"><p style="font-size:26px;letter-spacing:6px">SKYLENS</p><div style="display:flex;gap:56px"><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Intro</p><p style="font-size:24px;letter-spacing:0.6px">A night out</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">How it works</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Beyond</p></div><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Beginner's guide  ›</p></div>
+<svg aria-label="" style="position:absolute;left:1212px;top:182px" width="700" height="700" viewBox="0 0 700 700"><defs><radialGradient id="w" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#0A2142"/><stop offset="1" stop-color="#0A2142" stop-opacity="0"/></radialGradient></defs><circle cx="350" cy="350" r="340" fill="url(#w)"/><circle cx="350" cy="350" r="340" fill="none" stroke="#333333" stroke-dasharray="4 10"/><circle cx="350" cy="350" r="280" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="350" cy="350" r="210" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="350" cy="350" r="140" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="152" cy="152" r="5" fill="#FFFFFF"/><circle cx="620" cy="460" r="4" fill="#807F7F"/></svg>
+<div style="position:absolute;left:1024px;top:178px;width:144px;display:flex;gap:12px"><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#FFFFFF"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div></div>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#807F7F">Step 02 — Tonight's sky</p>
+<h2 style="font-size:72px;font-weight:400;line-height:1.13;letter-spacing:2.9px;width:1040px">See what is worth looking at tonight</h2>
+<p style="font-size:32px;line-height:1.6;letter-spacing:0.8px;color:#807F7F;width:1000px">Before you lift the phone, SkyLens lists the brightest things in your sky, easiest first.</p>
+<div data-build="rise" data-order="2" style="position:absolute;left:128px;top:600px;width:1040px;background:#1E1F20;border-radius:32px;padding:40px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">The Moon's phase</span>: a bright Moon hides faint stars.</p></div>
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10V2" /><path d="m4.93 10.93 1.41 1.41" /><path d="M2 18h2" /><path d="M20 18h2" /><path d="m19.07 10.93-1.41 1.41" /><path d="M22 22H2" /><path d="m16 6-4 4-4-4" /><path d="M16 18a4 4 0 0 0-8 0" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">When darkness starts</span>, so you know when to go out.</p></div>
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">A cloud forecast</span> for the next hours.</p></div>
+</div>
+<iframe data-build="rise" data-order="1" sandbox="allow-scripts" srcdoc="&lt;style&gt;*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;background:transparent;overflow:hidden;font-family:system-ui,-apple-system,&quot;Segoe UI&quot;,Roboto,sans-serif;color:#fff;letter-spacing:.02em}
+.ph{position:absolute;left:20px;top:2px;width:420px;height:828px;border-radius:66px;background:#000;border:10px solid #181818;outline:1px solid #333;overflow:hidden;padding:60px 20px 20px;display:flex;flex-direction:column;gap:14px}
+.nt{position:absolute;top:12px;left:140px;width:120px;height:32px;border-radius:16px;background:#181818}
+.cd{background:#1e1f20;border-radius:20px;padding:16px 18px}
+h1{font-size:40px;font-weight:400;letter-spacing:1.6px}
+.mut{color:#807f7f;font-size:24px}
+.cap{color:#807f7f;font-size:24px;letter-spacing:.06em;text-transform:uppercase}
+.moon{display:flex;gap:18px;align-items:center}
+.mn{width:60px;height:60px;border-radius:50%;background:#333;position:relative;overflow:hidden;flex:none}
+.mn i{position:absolute;inset:0;border-radius:50%;background:#f1f4f4;animation:ph 8s ease-in-out infinite}
+@keyframes ph{0%{transform:translateX(50px)}50%{transform:translateX(28px)}100%{transform:translateX(50px)}}
+.bars{display:flex;gap:5px;align-items:flex-end;height:56px;margin-top:10px}
+.bars i{flex:1;border-radius:3px;background:#fff;transition:height 1.2s,opacity 1.2s}
+.row{display:flex;align-items:center;gap:14px;padding:12px 4px;border-bottom:1px solid #333;opacity:0;transform:translateX(40px);transition:all .6s}
+.row.in{opacity:1;transform:none}
+.dot{width:12px;height:12px;border-radius:50%;background:#fff;flex:none}
+.nm{font-size:26px}
+.tag{margin-left:auto;font-size:24px;color:#22e2a8}
+&lt;/style&gt;
+&lt;div class=&quot;ph&quot;&gt;&lt;div class=&quot;nt&quot;&gt;&lt;/div&gt;
+&lt;div&gt;&lt;h1&gt;Tonight&lt;/h1&gt;&lt;p class=&quot;mut&quot;&gt;Dark from 19:06 · clearing later&lt;/p&gt;&lt;/div&gt;
+&lt;div class=&quot;cd moon&quot;&gt;&lt;div class=&quot;mn&quot;&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;p style=&quot;font-size:26px&quot;&gt;Waxing crescent&lt;/p&gt;&lt;p class=&quot;mut&quot;&gt;Sets at 20:40&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class=&quot;cd&quot;&gt;&lt;p class=&quot;mut&quot;&gt;Clouds, next 12 hours&lt;/p&gt;&lt;div class=&quot;bars&quot; id=&quot;br&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p class=&quot;cap&quot; style=&quot;margin-top:6px&quot;&gt;Best to see now&lt;/p&gt;
+&lt;div id=&quot;ls&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;script&gt;
+const ls=document.getElementById(&#x27;ls&#x27;),br=document.getElementById(&#x27;br&#x27;);
+const R=[[&#x27;Jupiter&#x27;,&#x27;ESE · 40° up&#x27;,&#x27;● Best now&#x27;],[&#x27;Saturn&#x27;,&#x27;S · 35° up&#x27;,&#x27;&#x27;],[&#x27;Vega&#x27;,&#x27;W · 60° up&#x27;,&#x27;&#x27;],[&#x27;Mars&#x27;,&#x27;Rises 23:10&#x27;,&#x27;&#x27;]];
+R.forEach(r=&gt;{const d=document.createElement(&#x27;div&#x27;);d.className=&#x27;row&#x27;;d.innerHTML=&#x27;&lt;span class=&quot;dot&quot;&gt;&lt;/span&gt;&lt;div&gt;&lt;div class=&quot;nm&quot;&gt;&#x27;+r[0]+&#x27;&lt;/div&gt;&lt;div class=&quot;mut&quot;&gt;&#x27;+r[1]+&#x27;&lt;/div&gt;&lt;/div&gt;&#x27;+(r[2]?&#x27;&lt;span class=&quot;tag&quot;&gt;&#x27;+r[2]+&#x27;&lt;/span&gt;&#x27;:&#x27;&#x27;);ls.appendChild(d)});
+for(let i=0;i&lt;12;i++)br.appendChild(document.createElement(&#x27;i&#x27;));
+function loop(){const rows=[...ls.children];rows.forEach(r=&gt;r.classList.remove(&#x27;in&#x27;));
+[...br.children].forEach((b,i)=&gt;{const c=i&gt;3?.85:.25+Math.random()*.3;b.style.height=(8+48*c)+&#x27;px&#x27;;b.style.opacity=.25+.7*c});
+rows.forEach((r,i)=&gt;setTimeout(()=&gt;r.classList.add(&#x27;in&#x27;),700+i*450));setTimeout(loop,8000)}
+loop();
+&lt;/script&gt;" style="position:absolute;left:1332px;top:116px;width:460px;height:832px;border:0;background:transparent;color-scheme:normal"></iframe>
+
+</section>
+<section id="ar" data-transition="fade" style="background:#000000;color:#FFFFFF;font-family:Geist, Arial, sans-serif;padding:168px 128px 128px;display:flex;flex-direction:column;gap:28px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:88px;background:#181818;border-bottom:1px solid #333333;display:flex;align-items:center;justify-content:space-between;padding:0 128px"><p style="font-size:26px;letter-spacing:6px">SKYLENS</p><div style="display:flex;gap:56px"><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Intro</p><p style="font-size:24px;letter-spacing:0.6px">A night out</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">How it works</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Beyond</p></div><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Beginner's guide  ›</p></div>
+<svg aria-label="" style="position:absolute;left:1212px;top:182px" width="700" height="700" viewBox="0 0 700 700"><defs><radialGradient id="w" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#0A2142"/><stop offset="1" stop-color="#0A2142" stop-opacity="0"/></radialGradient></defs><circle cx="350" cy="350" r="340" fill="url(#w)"/><circle cx="350" cy="350" r="340" fill="none" stroke="#333333" stroke-dasharray="4 10"/><circle cx="350" cy="350" r="280" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="350" cy="350" r="210" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="350" cy="350" r="140" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="548" cy="548" r="5" fill="#FFFFFF"/><circle cx="70" cy="300" r="4" fill="#807F7F"/></svg>
+<div style="position:absolute;left:1024px;top:178px;width:144px;display:flex;gap:12px"><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#FFFFFF"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div></div>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#807F7F">Step 03 — Point</p>
+<h2 style="font-size:72px;font-weight:400;line-height:1.13;letter-spacing:2.9px;width:1040px">Point your phone. Names appear on the sky.</h2>
+<p style="font-size:32px;line-height:1.6;letter-spacing:0.8px;color:#807F7F;width:1000px">Hold it up like a camera. Labels slide over the real stars and planets as you move.</p>
+<div data-build="rise" data-order="2" style="position:absolute;left:128px;top:600px;width:1040px;background:#1E1F20;border-radius:32px;padding:40px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><line x1="22" x2="18" y1="12" y2="12" /><line x1="6" x2="2" y1="12" y2="12" /><line x1="12" x2="12" y1="6" y2="2" /><line x1="12" x2="12" y1="22" y2="18" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">The crosshair</span> shows exactly where you are aiming.</p></div>
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">The dashed line</span> is the horizon, even behind trees.</p></div>
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" /><circle cx="12" cy="12" r="10" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">Labels drifting?</span> Centre the Moon, tap Calibrate.</p></div>
+</div>
+<iframe data-build="rise" data-order="1" sandbox="allow-scripts" srcdoc="&lt;style&gt;*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;background:transparent;overflow:hidden;font-family:system-ui,-apple-system,&quot;Segoe UI&quot;,Roboto,sans-serif;color:#fff;letter-spacing:.02em}
+.ph{position:absolute;left:20px;top:2px;width:420px;height:828px;border-radius:66px;background:#000;border:10px solid #181818;outline:1px solid #333;overflow:hidden}
+.nt{position:absolute;top:12px;left:140px;width:120px;height:32px;border-radius:16px;background:#181818;z-index:30}
+#L{position:absolute;left:0;top:0;width:1300px;height:1300px}
+.st{position:absolute;border-radius:50%;background:#fff}
+.ob{position:absolute;transform:translate(-50%,-50%)}
+.ob .d{border-radius:50%;margin:auto;background:#fff}
+.ob .rg{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px;border:1px solid #666;border-radius:50%;transition:all .3s}
+.ob.hit .rg{width:70px;height:70px;margin:-35px;border:1.5px solid #22e2a8}
+.ob span{position:absolute;left:26px;top:-16px;font-size:24px;white-space:nowrap;letter-spacing:.04em}
+.ob.hit span{color:#22e2a8}
+#hz{position:absolute;left:0;width:1300px;top:1080px;border-top:1.5px dashed #807f7f}
+#hz b{position:absolute;left:560px;top:8px;font-size:24px;font-weight:400;letter-spacing:.1em;color:#807f7f}
+.trees{position:absolute;left:0;right:0;bottom:0;height:150px;z-index:5}
+.ret{position:absolute;left:182px;top:386px;width:36px;height:36px;z-index:6}
+.ret:before,.ret:after{content:&quot;&quot;;position:absolute;background:#fff}
+.ret:before{left:17px;top:0;width:1.5px;height:36px}.ret:after{top:17px;left:0;height:1.5px;width:36px}
+.pill{position:absolute;left:18px;right:18px;bottom:24px;z-index:7;background:#1e1f20;border-radius:20px;padding:14px 16px;font-size:24px;text-align:center}
+.pill b{font-weight:400;color:#22e2a8}
+&lt;/style&gt;
+&lt;div class=&quot;ph&quot;&gt;&lt;div class=&quot;nt&quot;&gt;&lt;/div&gt;&lt;div id=&quot;L&quot;&gt;&lt;div id=&quot;hz&quot;&gt;&lt;b&gt;HORIZON&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;svg class=&quot;trees&quot; viewBox=&quot;0 0 400 150&quot; preserveAspectRatio=&quot;none&quot;&gt;&lt;path d=&quot;M0 150V90l20-30 18 30 14-50 20 60 25-20 15 25 30-70 22 70 30-35 20 30 24-55 26 55 30-30 18 25 22-40 26 50V150z&quot; fill=&quot;#181818&quot;/&gt;&lt;/svg&gt;
+&lt;div class=&quot;ret&quot;&gt;&lt;/div&gt;&lt;div class=&quot;pill&quot; id=&quot;P&quot;&gt;Pointing&lt;/div&gt;&lt;/div&gt;
+&lt;script&gt;
+const L=document.getElementById(&#x27;L&#x27;),P=document.getElementById(&#x27;P&#x27;);
+for(let i=0;i&lt;200;i++){const s=document.createElement(&#x27;i&#x27;);s.className=&#x27;st&#x27;;const r=Math.random()*2+.5;s.style.cssText=&#x27;left:&#x27;+Math.random()*1300+&#x27;px;top:&#x27;+Math.random()*1060+&#x27;px;width:&#x27;+r+&#x27;px;height:&#x27;+r+&#x27;px;opacity:&#x27;+(.25+Math.random()*.55);L.appendChild(s)}
+const O=[[&#x27;Jupiter&#x27;,520,620,14],[&#x27;Saturn&#x27;,860,760,11],[&#x27;Moon&#x27;,300,860,32],[&#x27;Vega&#x27;,640,260,9],[&#x27;Altair&#x27;,900,420,8],[&#x27;Deneb&#x27;,380,300,8]];
+const E=O.map(o=&gt;{const d=document.createElement(&#x27;div&#x27;);d.className=&#x27;ob&#x27;;d.style.left=o[1]+&#x27;px&#x27;;d.style.top=o[2]+&#x27;px&#x27;;d.innerHTML=&#x27;&lt;div class=&quot;d&quot; style=&quot;width:&#x27;+o[3]+&#x27;px;height:&#x27;+o[3]+&#x27;px&quot;&gt;&lt;/div&gt;&lt;div class=&quot;rg&quot;&gt;&lt;/div&gt;&lt;span&gt;&#x27;+o[0]+&#x27;&lt;/span&gt;&#x27;;L.appendChild(d);return d});
+const pts=&#x27;N NE E SE S SW W NW&#x27;.split(&#x27; &#x27;);let t=0;
+function f(){t+=.006;const ox=-450+330*Math.sin(t),oy=-480+190*Math.sin(t*1.7+1);L.style.transform=&#x27;translate(&#x27;+ox+&#x27;px,&#x27;+oy+&#x27;px)&#x27;;
+const cx=200-ox,cy=404-oy;let best=-1,bd=60;O.forEach((o,i)=&gt;{const d=Math.hypot(o[1]-cx,o[2]-cy);if(d&lt;bd){bd=d;best=i}});
+E.forEach((e,i)=&gt;e.classList.toggle(&#x27;hit&#x27;,i==best));
+const az=Math.round(((90+(cx-650)/7)%360+360)%360),alt=Math.round(Math.max(0,(1080-cy)/14));
+P.innerHTML=best&gt;=0?&#x27;&lt;b&gt;&#x27;+O[best][0]+&#x27;&lt;/b&gt; in view · tap to learn&#x27;:&#x27;Pointing &#x27;+az+&#x27;° &#x27;+pts[Math.round(az/45)%8]+&#x27; · &#x27;+alt+&#x27;° up&#x27;;
+requestAnimationFrame(f)}f();
+&lt;/script&gt;" style="position:absolute;left:1332px;top:116px;width:460px;height:832px;border:0;background:transparent;color-scheme:normal"></iframe>
+
+</section>
+<section id="tap" data-transition="fade" style="background:#000000;color:#FFFFFF;font-family:Geist, Arial, sans-serif;padding:168px 128px 128px;display:flex;flex-direction:column;gap:28px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:88px;background:#181818;border-bottom:1px solid #333333;display:flex;align-items:center;justify-content:space-between;padding:0 128px"><p style="font-size:26px;letter-spacing:6px">SKYLENS</p><div style="display:flex;gap:56px"><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Intro</p><p style="font-size:24px;letter-spacing:0.6px">A night out</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">How it works</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Beyond</p></div><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Beginner's guide  ›</p></div>
+<svg aria-label="" style="position:absolute;left:1212px;top:182px" width="700" height="700" viewBox="0 0 700 700"><defs><radialGradient id="w" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#0A2142"/><stop offset="1" stop-color="#0A2142" stop-opacity="0"/></radialGradient></defs><circle cx="350" cy="350" r="340" fill="url(#w)"/><circle cx="350" cy="350" r="340" fill="none" stroke="#333333" stroke-dasharray="4 10"/><circle cx="350" cy="350" r="280" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="350" cy="350" r="210" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="350" cy="350" r="140" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="350" cy="70" r="5" fill="#FFFFFF"/><circle cx="610" cy="480" r="4" fill="#807F7F"/></svg>
+<div style="position:absolute;left:1024px;top:178px;width:144px;display:flex;gap:12px"><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#FFFFFF"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div></div>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#807F7F">Step 04 — Tap</p>
+<h2 style="font-size:72px;font-weight:400;line-height:1.13;letter-spacing:2.9px;width:1040px">Tap anything to learn what it is</h2>
+<p style="font-size:32px;line-height:1.6;letter-spacing:0.8px;color:#807F7F;width:1000px">A card slides up with simple facts, the best time to look, and directions anyone can follow.</p>
+<div data-build="rise" data-order="2" style="position:absolute;left:128px;top:600px;width:1040px;background:#1E1F20;border-radius:32px;padding:40px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">Plain words:</span> what it is and why it is up tonight.</p></div>
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2" /><path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2" /><path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8" /><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">Directions in fists:</span> one fist held out is about 10°.</p></div>
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" /><path d="m9 12 2 2 4-4" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">Every fact</span> shows where it came from.</p></div>
+</div>
+<iframe data-build="rise" data-order="1" sandbox="allow-scripts" srcdoc="&lt;style&gt;*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;background:transparent;overflow:hidden;font-family:system-ui,-apple-system,&quot;Segoe UI&quot;,Roboto,sans-serif;color:#fff;letter-spacing:.02em}
+.ph{position:absolute;left:20px;top:2px;width:420px;height:828px;border-radius:66px;background:#000;border:10px solid #181818;outline:1px solid #333;overflow:hidden}
+.nt{position:absolute;top:12px;left:140px;width:120px;height:32px;border-radius:16px;background:#181818;z-index:30}
+.st{position:absolute;border-radius:50%;background:#fff}
+.jp{position:absolute;left:200px;top:250px;width:16px;height:16px;margin:-8px;border-radius:50%;background:#fff}
+.jr{position:absolute;left:200px;top:250px;width:52px;height:52px;margin:-26px;border-radius:50%;border:1px solid #666;transition:all .3s}
+.go .jr{border:1.5px solid #22e2a8;width:66px;height:66px;margin:-33px}
+.jl{position:absolute;left:236px;top:232px;font-size:24px;letter-spacing:.04em}
+.rp{position:absolute;left:200px;top:250px;width:30px;height:30px;margin:-15px;border-radius:50%;border:1.5px solid #fff;opacity:0}
+.go .rp{animation:r .8s ease-out}
+@keyframes r{0%{opacity:1;transform:scale(.5)}100%{opacity:0;transform:scale(3)}}
+.sh{position:absolute;left:0;right:0;bottom:0;height:540px;background:#1e1f20;border-radius:30px 30px 0 0;padding:16px 24px;transform:translateY(100%);transition:transform .6s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;gap:14px}
+.open .sh{transform:none}
+.hd{width:56px;height:5px;border-radius:3px;background:#666;margin:0 auto 6px}
+h1{font-size:38px;font-weight:400;letter-spacing:1.5px}
+.mut{color:#807f7f;font-size:24px;line-height:1.4}
+.dir{display:flex;gap:16px;align-items:center;padding:14px 0;border-top:1px solid #333;border-bottom:1px solid #333}
+.cp{width:80px;height:80px;border-radius:50%;border:1px solid #807f7f;position:relative;flex:none}
+.cp b{position:absolute;left:32px;top:2px;font-size:24px;font-weight:400}
+.cp i{position:absolute;left:50px;top:50px;width:12px;height:12px;border-radius:50%;background:#fff}
+.fr{display:flex;justify-content:space-between;font-size:24px;padding:6px 0;border-bottom:1px solid #333}
+.fr span{color:#807f7f}
+.bd{font-size:24px;color:#807f7f;letter-spacing:.06em;text-transform:uppercase}
+&lt;/style&gt;
+&lt;div class=&quot;ph&quot; id=&quot;ph&quot;&gt;&lt;div class=&quot;nt&quot;&gt;&lt;/div&gt;&lt;div id=&quot;sky&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;jr&quot;&gt;&lt;/div&gt;&lt;div class=&quot;jp&quot;&gt;&lt;/div&gt;&lt;div class=&quot;jl&quot;&gt;Jupiter&lt;/div&gt;&lt;div class=&quot;rp&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;sh&quot;&gt;&lt;div class=&quot;hd&quot;&gt;&lt;/div&gt;&lt;h1&gt;Jupiter&lt;/h1&gt;&lt;p class=&quot;mut&quot;&gt;Planet · the largest in our Solar System&lt;/p&gt;
+&lt;div class=&quot;dir&quot;&gt;&lt;div class=&quot;cp&quot;&gt;&lt;b&gt;N&lt;/b&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;&lt;p style=&quot;font-size:24px;line-height:1.4&quot;&gt;Face south-east, look 34° up: about three fists high.&lt;/p&gt;&lt;/div&gt;
+&lt;div class=&quot;fr&quot;&gt;&lt;span&gt;Rises&lt;/span&gt;18:12&lt;/div&gt;
+&lt;div class=&quot;fr&quot;&gt;&lt;span&gt;Highest&lt;/span&gt;23:40 · 52°&lt;/div&gt;
+&lt;div class=&quot;fr&quot;&gt;&lt;span&gt;Brightness&lt;/span&gt;Very bright&lt;/div&gt;
+&lt;p class=&quot;bd&quot;&gt;Computed by SkyLens&lt;/p&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;
+const sky=document.getElementById(&#x27;sky&#x27;),ph=document.getElementById(&#x27;ph&#x27;);
+for(let i=0;i&lt;80;i++){const s=document.createElement(&#x27;i&#x27;);s.className=&#x27;st&#x27;;const r=Math.random()*1.8+.5;s.style.cssText=&#x27;left:&#x27;+Math.random()*400+&#x27;px;top:&#x27;+Math.random()*780+&#x27;px;width:&#x27;+r+&#x27;px;height:&#x27;+r+&#x27;px;opacity:&#x27;+(.2+Math.random()*.5);sky.appendChild(s)}
+function loop(){ph.classList.remove(&#x27;go&#x27;,&#x27;open&#x27;);setTimeout(()=&gt;ph.classList.add(&#x27;go&#x27;),1200);setTimeout(()=&gt;ph.classList.add(&#x27;open&#x27;),1800);setTimeout(()=&gt;ph.classList.remove(&#x27;open&#x27;),8000);setTimeout(loop,9400)}
+loop();
+&lt;/script&gt;" style="position:absolute;left:1332px;top:116px;width:460px;height:832px;border:0;background:transparent;color-scheme:normal"></iframe>
+
+</section>
+<section id="map" data-transition="fade" style="background:#000000;color:#FFFFFF;font-family:Geist, Arial, sans-serif;padding:168px 128px 128px;display:flex;flex-direction:column;gap:28px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:88px;background:#181818;border-bottom:1px solid #333333;display:flex;align-items:center;justify-content:space-between;padding:0 128px"><p style="font-size:26px;letter-spacing:6px">SKYLENS</p><div style="display:flex;gap:56px"><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Intro</p><p style="font-size:24px;letter-spacing:0.6px">A night out</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">How it works</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Beyond</p></div><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Beginner's guide  ›</p></div>
+<svg aria-label="" style="position:absolute;left:1212px;top:182px" width="700" height="700" viewBox="0 0 700 700"><defs><radialGradient id="w" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#0A2142"/><stop offset="1" stop-color="#0A2142" stop-opacity="0"/></radialGradient></defs><circle cx="350" cy="350" r="340" fill="url(#w)"/><circle cx="350" cy="350" r="340" fill="none" stroke="#333333" stroke-dasharray="4 10"/><circle cx="350" cy="350" r="280" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="350" cy="350" r="210" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="350" cy="350" r="140" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="152" cy="548" r="5" fill="#FFFFFF"/><circle cx="640" cy="260" r="4" fill="#807F7F"/></svg>
+<div style="position:absolute;left:1024px;top:178px;width:144px;display:flex;gap:12px"><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#FFFFFF"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div></div>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#807F7F">Step 05 — Map</p>
+<h2 style="font-size:72px;font-weight:400;line-height:1.13;letter-spacing:2.9px;width:1040px">See the whole sky as one map</h2>
+<p style="font-size:32px;line-height:1.6;letter-spacing:0.8px;color:#807F7F;width:1000px">No need to hold the phone up. Everything above you at once, with time you can move forward.</p>
+<div data-build="rise" data-order="2" style="position:absolute;left:128px;top:600px;width:1040px;background:#1E1F20;border-radius:32px;padding:40px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3" /><circle cx="19" cy="5" r="2" /><circle cx="5" cy="19" r="2" /><path d="M10.4 21.9a10 10 0 0 0 9.941-15.416" /><path d="M13.5 2.1a10 10 0 0 0-9.841 15.416" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">Edge = horizon, centre = overhead.</span> East is on the left.</p></div>
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">Slide time forward</span> to see what rises later tonight.</p></div>
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2" /><line x1="8" x2="16" y1="21" y2="21" /><line x1="12" x2="12" y1="17" y2="21" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">No camera needed</span>: indoors, or on a computer.</p></div>
+</div>
+<iframe data-build="rise" data-order="1" sandbox="allow-scripts" srcdoc="&lt;style&gt;*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;background:transparent;overflow:hidden;font-family:system-ui,-apple-system,&quot;Segoe UI&quot;,Roboto,sans-serif;color:#fff;letter-spacing:.02em}
+.ph{position:absolute;left:20px;top:2px;width:420px;height:828px;border-radius:66px;background:#000;border:10px solid #181818;outline:1px solid #333;overflow:hidden;padding:60px 20px 20px;display:flex;flex-direction:column;gap:12px;align-items:center}
+.nt{position:absolute;top:12px;left:140px;width:120px;height:32px;border-radius:16px;background:#181818}
+h1{font-size:38px;font-weight:400;letter-spacing:1.5px;align-self:flex-start}
+.mut{color:#807f7f;font-size:24px;align-self:flex-start}
+canvas{width:360px;height:420px}
+.ctl{width:100%;background:#1e1f20;border-radius:20px;padding:14px 22px;display:flex;flex-direction:column;gap:12px;align-items:center}
+.tm{font-size:30px;letter-spacing:.06em}
+.sl{width:100%;height:2px;background:#333;position:relative}
+.sl b{position:absolute;left:0;top:0;height:2px;background:#fff}
+.sl i{position:absolute;top:-12px;width:26px;height:26px;border-radius:50%;background:#000;border:1.5px solid #fff;margin-left:-13px}
+&lt;/style&gt;
+&lt;div class=&quot;ph&quot;&gt;&lt;div class=&quot;nt&quot;&gt;&lt;/div&gt;&lt;h1&gt;Sky map&lt;/h1&gt;&lt;p class=&quot;mut&quot;&gt;Drag the time to plan your night&lt;/p&gt;
+&lt;canvas id=&quot;c&quot; width=&quot;720&quot; height=&quot;840&quot;&gt;&lt;/canvas&gt;
+&lt;div class=&quot;ctl&quot;&gt;&lt;div class=&quot;tm&quot; id=&quot;tm&quot;&gt;20:00&lt;/div&gt;&lt;div class=&quot;sl&quot;&gt;&lt;b id=&quot;fb&quot;&gt;&lt;/b&gt;&lt;i id=&quot;th&quot;&gt;&lt;/i&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;script&gt;
+const c=document.getElementById(&#x27;c&#x27;),x=c.getContext(&#x27;2d&#x27;),tm=document.getElementById(&#x27;tm&#x27;),th=document.getElementById(&#x27;th&#x27;),fb=document.getElementById(&#x27;fb&#x27;);
+const CX=360,CY=410,R=320,PX=CX,PY=CY-R*.555;
+const S=[];for(let i=0;i&lt;240;i++){const a=Math.random()*6.283,d=Math.sqrt(Math.random())*R*1.6;S.push([PX+Math.cos(a)*d,PY+Math.sin(a)*d,Math.random()*2.4+.8])}
+const D=[[-60,40],[-20,60],[20,70],[60,60],[90,100],[150,90],[140,30]],P=[[CX-90,CY+120,&#x27;Jupiter&#x27;],[CX+140,CY+60,&#x27;Saturn&#x27;]];
+let k=0;
+function f(){k+=.0025;const ang=-(k%1)*1.4;x.clearRect(0,0,720,840);x.save();x.beginPath();x.arc(CX,CY,R,0,6.283);x.fillStyle=&#x27;#0a2142&#x27;;x.globalAlpha=.55;x.fill();x.globalAlpha=1;x.clip();
+x.strokeStyle=&#x27;#085556&#x27;;x.lineWidth=2;[R*2/3,R/3].forEach(r=&gt;{x.beginPath();x.arc(CX,CY,r,0,6.283);x.stroke()});
+x.translate(PX,PY);x.rotate(ang);x.translate(-PX,-PY);
+for(const s of S){x.globalAlpha=.3+s[2]/5;x.fillStyle=&#x27;#fff&#x27;;x.beginPath();x.arc(s[0],s[1],s[2],0,6.283);x.fill()}
+x.globalAlpha=.55;x.strokeStyle=&#x27;#fff&#x27;;x.lineWidth=1.5;x.beginPath();D.forEach((p,i)=&gt;{const X=PX+p[0],Y=PY+p[1];i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke();
+x.globalAlpha=1;P.forEach(p=&gt;{x.fillStyle=&#x27;#fff&#x27;;x.beginPath();x.arc(p[0],p[1],8,0,6.283);x.fill();x.font=&#x27;26px system-ui&#x27;;x.fillText(p[2],p[0]+18,p[1]-12)});
+x.restore();x.strokeStyle=&#x27;#fff&#x27;;x.lineWidth=1.5;x.beginPath();x.arc(CX,CY,R,0,6.283);x.stroke();
+x.fillStyle=&#x27;#fff&#x27;;x.font=&#x27;28px system-ui&#x27;;x.textAlign=&#x27;center&#x27;;x.fillText(&#x27;N&#x27;,CX,CY-R-12);x.fillText(&#x27;S&#x27;,CX,CY+R+34);x.fillText(&#x27;E&#x27;,CX-R-22,CY+10);x.fillText(&#x27;W&#x27;,CX+R+22,CY+10);x.textAlign=&#x27;left&#x27;;
+const q=k%1,h=20+q*8;tm.textContent=String(Math.floor(h)%24).padStart(2,&#x27;0&#x27;)+&#x27;:&#x27;+String(Math.floor((h%1)*4)*15).padStart(2,&#x27;0&#x27;);th.style.left=(q*100)+&#x27;%&#x27;;fb.style.width=(q*100)+&#x27;%&#x27;;
+requestAnimationFrame(f)}f();
+&lt;/script&gt;" style="position:absolute;left:1332px;top:116px;width:460px;height:832px;border:0;background:transparent;color-scheme:normal"></iframe>
+
+</section>
+<section id="log" data-transition="push" style="background:#000000;color:#FFFFFF;font-family:Geist, Arial, sans-serif;padding:168px 128px 128px;display:flex;flex-direction:column;gap:28px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:88px;background:#181818;border-bottom:1px solid #333333;display:flex;align-items:center;justify-content:space-between;padding:0 128px"><p style="font-size:26px;letter-spacing:6px">SKYLENS</p><div style="display:flex;gap:56px"><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Intro</p><p style="font-size:24px;letter-spacing:0.6px">A night out</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">How it works</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Beyond</p></div><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Beginner's guide  ›</p></div>
+<svg aria-label="" style="position:absolute;left:1212px;top:182px" width="700" height="700" viewBox="0 0 700 700"><defs><radialGradient id="w" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#0A2142"/><stop offset="1" stop-color="#0A2142" stop-opacity="0"/></radialGradient></defs><circle cx="350" cy="350" r="340" fill="url(#w)"/><circle cx="350" cy="350" r="340" fill="none" stroke="#333333" stroke-dasharray="4 10"/><circle cx="350" cy="350" r="280" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="350" cy="350" r="210" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="350" cy="350" r="140" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="548" cy="152" r="5" fill="#FFFFFF"/><circle cx="90" cy="460" r="4" fill="#807F7F"/></svg>
+<div style="position:absolute;left:1024px;top:178px;width:144px;display:flex;gap:12px"><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#807F7F"></div><div style="width:14px;height:14px;border-radius:50%;background:#FFFFFF"></div></div>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#807F7F">Step 06 — Log</p>
+<h2 style="font-size:72px;font-weight:400;line-height:1.13;letter-spacing:2.9px;width:1040px">Save what you saw in 30 seconds</h2>
+<p style="font-size:32px;line-height:1.6;letter-spacing:0.8px;color:#807F7F;width:1000px">Type what you saw, rate the sky, pick your gear, save. Time and place are added for you.</p>
+<div data-build="rise" data-order="2" style="position:absolute;left:128px;top:600px;width:1040px;background:#1E1F20;border-radius:32px;padding:40px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">Time and place</span> are filled in for you.</p></div>
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14" /><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">A personal diary</span> of everything you have seen.</p></div>
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" x2="15.42" y1="13.51" y2="17.49" /><line x1="15.41" x2="8.59" y1="6.51" y2="10.49" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">Export and share</span> your log with science projects.</p></div>
+</div>
+<iframe data-build="rise" data-order="1" sandbox="allow-scripts" srcdoc="&lt;style&gt;*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;background:transparent;overflow:hidden;font-family:system-ui,-apple-system,&quot;Segoe UI&quot;,Roboto,sans-serif;color:#fff;letter-spacing:.02em}
+.ph{position:absolute;left:20px;top:2px;width:420px;height:828px;border-radius:66px;background:#000;border:10px solid #181818;outline:1px solid #333;overflow:hidden;padding:60px 22px 22px;display:flex;flex-direction:column;gap:14px}
+.nt{position:absolute;top:12px;left:140px;width:120px;height:32px;border-radius:16px;background:#181818;z-index:30}
+h1{font-size:34px;font-weight:400;letter-spacing:1.4px}
+.lb{color:#807f7f;font-size:24px}
+.fd{background:#1e1f20;border-radius:20px;padding:14px;font-size:26px;min-height:58px;border:1px solid transparent;transition:border-color .3s}
+.fd.f{border-color:#22e2a8}
+.cur{display:inline-block;width:2px;height:26px;background:#22e2a8;vertical-align:middle;animation:b 1s steps(2) infinite}
+@keyframes b{50%{opacity:0}}
+.tr{height:2px;background:#333;position:relative;margin:16px 8px}
+.tr b{position:absolute;left:0;top:0;height:2px;background:#fff;transition:width 1s}
+.tr i{position:absolute;top:-12px;width:26px;height:26px;margin-left:-13px;border-radius:50%;background:#000;border:1.5px solid #fff;transition:left 1s}
+.ch{display:flex;gap:10px;flex-wrap:wrap}
+.ch span{font-size:24px;padding:8px 16px;border-radius:20px;border:1px solid #333;color:#807f7f;transition:all .3s}
+.ch span.on{border-color:#fff;color:#fff}
+.sv{margin-top:6px;border:1px solid #fff;border-radius:20px;padding:14px;text-align:center;font-size:26px;position:relative;overflow:hidden}
+.sv .rp{position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px;border-radius:50%;background:#fff;opacity:0}
+.go .rp{animation:r .7s ease-out}
+@keyframes r{0%{opacity:.5}100%{opacity:0;transform:scale(20)}}
+.ts{position:absolute;left:22px;right:22px;bottom:30px;background:#1e1f20;border-radius:20px;padding:14px 16px;font-size:24px;display:flex;gap:10px;align-items:center;transform:translateY(160px);transition:transform .5s}
+.ts.on{transform:none}
+.ts i{width:12px;height:12px;border-radius:50%;background:#22e2a8;flex:none}
+&lt;/style&gt;
+&lt;div class=&quot;ph&quot; id=&quot;ph&quot;&gt;&lt;div class=&quot;nt&quot;&gt;&lt;/div&gt;&lt;h1&gt;New observation&lt;/h1&gt;
+&lt;p class=&quot;lb&quot;&gt;What did you see?&lt;/p&gt;&lt;div class=&quot;fd&quot; id=&quot;fd&quot;&gt;&lt;span id=&quot;tx&quot;&gt;&lt;/span&gt;&lt;span class=&quot;cur&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;p class=&quot;lb&quot;&gt;Sky conditions: &lt;span id=&quot;q&quot; style=&quot;color:#fff&quot;&gt;OK&lt;/span&gt;&lt;/p&gt;&lt;div class=&quot;tr&quot;&gt;&lt;b id=&quot;tb&quot;&gt;&lt;/b&gt;&lt;i id=&quot;ti&quot;&gt;&lt;/i&gt;&lt;/div&gt;
+&lt;p class=&quot;lb&quot;&gt;Equipment&lt;/p&gt;&lt;div class=&quot;ch&quot;&gt;&lt;span id=&quot;c0&quot; class=&quot;on&quot;&gt;Naked eye&lt;/span&gt;&lt;span id=&quot;c1&quot;&gt;Binoculars&lt;/span&gt;&lt;span&gt;Telescope&lt;/span&gt;&lt;/div&gt;
+&lt;div class=&quot;sv&quot; id=&quot;sv&quot;&gt;Save observation  ›&lt;span class=&quot;rp&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;div class=&quot;ts&quot; id=&quot;ts&quot;&gt;&lt;i&gt;&lt;/i&gt;&lt;span&gt;Saved · 21:14 · place added&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;
+const $=i=&gt;document.getElementById(i),T=&#x27;Jupiter and 4 moons&#x27;;
+function set(v){$(&#x27;ti&#x27;).style.left=v+&#x27;%&#x27;;$(&#x27;tb&#x27;).style.width=v+&#x27;%&#x27;}
+function loop(){$(&#x27;tx&#x27;).textContent=&#x27;&#x27;;$(&#x27;fd&#x27;).classList.add(&#x27;f&#x27;);set(50);$(&#x27;q&#x27;).textContent=&#x27;OK&#x27;;$(&#x27;c0&#x27;).classList.add(&#x27;on&#x27;);$(&#x27;c1&#x27;).classList.remove(&#x27;on&#x27;);$(&#x27;ph&#x27;).classList.remove(&#x27;go&#x27;);$(&#x27;ts&#x27;).classList.remove(&#x27;on&#x27;);
+let i=0;const ty=setInterval(()=&gt;{$(&#x27;tx&#x27;).textContent=T.slice(0,++i);if(i&gt;=T.length)clearInterval(ty)},110);
+setTimeout(()=&gt;{$(&#x27;fd&#x27;).classList.remove(&#x27;f&#x27;);set(75);$(&#x27;q&#x27;).textContent=&#x27;Good&#x27;},2900);
+setTimeout(()=&gt;{$(&#x27;c0&#x27;).classList.remove(&#x27;on&#x27;);$(&#x27;c1&#x27;).classList.add(&#x27;on&#x27;)},4100);
+setTimeout(()=&gt;$(&#x27;ph&#x27;).classList.add(&#x27;go&#x27;),5200);setTimeout(()=&gt;$(&#x27;ts&#x27;).classList.add(&#x27;on&#x27;),5700);setTimeout(loop,9500)}
+loop();
+&lt;/script&gt;" style="position:absolute;left:1332px;top:116px;width:460px;height:832px;border:0;background:transparent;color-scheme:normal"></iframe>
+
+</section>
+<section id="engine" data-transition="fade" style="background:#000000;color:#FFFFFF;font-family:Geist, Arial, sans-serif;padding:168px 128px 160px;display:flex;flex-direction:column;gap:28px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:88px;background:#181818;border-bottom:1px solid #333333;display:flex;align-items:center;justify-content:space-between;padding:0 128px"><p style="font-size:26px;letter-spacing:6px">SKYLENS</p><div style="display:flex;gap:56px"><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Intro</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">A night out</p><p style="font-size:24px;letter-spacing:0.6px">How it works</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Beyond</p></div><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Beginner's guide  ›</p></div>
+<svg aria-label="" style="position:absolute;left:720px;top:415px" width="500" height="500" viewBox="0 0 500 500"><defs><radialGradient id="w" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#0A2142"/><stop offset="1" stop-color="#0A2142" stop-opacity="0"/></radialGradient></defs><circle cx="250" cy="250" r="245" fill="url(#w)"/><circle cx="250" cy="250" r="240" fill="none" stroke="#333333" stroke-dasharray="4 10"/><circle cx="250" cy="250" r="205" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="250" cy="250" r="175" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="395" cy="105" r="5" fill="#FFFFFF"/><circle cx="105" cy="395" r="4" fill="#807F7F"/></svg>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#807F7F">04 — How it works</p>
+<h2 style="font-size:72px;font-weight:400;line-height:1.13;letter-spacing:2.9px">How does it know where everything is?</h2>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none" viewBox="0 0 1920 1080"><line x1="588.0" y1="499.0" x2="832.0" y2="635.0" stroke="#666666" stroke-width="2.0" stroke-linecap="round"/><polygon points="832.0,635.0 818.0,634.2 824.0,623.5" fill="#666666"/></svg>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none" viewBox="0 0 1920 1080"><line x1="588.0" y1="659.0" x2="814.0" y2="665.0" stroke="#666666" stroke-width="2.0" stroke-linecap="round"/><polygon points="814.0,665.0 801.2,670.8 801.6,658.6" fill="#666666"/></svg>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none" viewBox="0 0 1920 1080"><line x1="588.0" y1="819.0" x2="832.0" y2="695.0" stroke="#666666" stroke-width="2.0" stroke-linecap="round"/><polygon points="832.0,695.0 823.5,706.1 818.0,695.3" fill="#666666"/></svg>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none" viewBox="0 0 1920 1080"><line x1="1126.0" y1="665.0" x2="1294.0" y2="665.0" stroke="#FFFFFF" stroke-width="2.0" stroke-linecap="round"/><polygon points="1294.0,665.0 1281.4,671.1 1281.4,658.9" fill="#FFFFFF"/></svg>
+<div data-build="left" data-order="1" style="position:absolute;left:128px;top:445px;width:460px;background:#1E1F20;border-radius:20px;padding:22px 28px;display:flex;gap:22px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /><circle cx="12" cy="10" r="3" /></g></svg><div style="display:flex;flex-direction:column;gap:4px"><h3 style="font-size:32px;font-weight:400;letter-spacing:0.8px">Your place</h3><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">From the phone's location</p></div></div>
+<div data-build="left" data-order="2" style="position:absolute;left:128px;top:605px;width:460px;background:#1E1F20;border-radius:20px;padding:22px 28px;display:flex;gap:22px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></g></svg><div style="display:flex;flex-direction:column;gap:4px"><h3 style="font-size:32px;font-weight:400;letter-spacing:0.8px">The exact time</h3><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">From the phone's clock</p></div></div>
+<div data-build="left" data-order="3" style="position:absolute;left:128px;top:765px;width:460px;background:#1E1F20;border-radius:20px;padding:22px 28px;display:flex;gap:22px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M3 5V19A9 3 0 0 0 21 19V5" /><path d="M3 12A9 3 0 0 0 21 12" /></g></svg><div style="display:flex;flex-direction:column;gap:4px"><h3 style="font-size:32px;font-weight:400;letter-spacing:0.8px">A sky catalogue</h3><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Stars and planet paths</p></div></div>
+<div data-build="pop" data-order="4" style="position:absolute;left:820px;top:515px;width:300px;height:300px;border-radius:50%;background:#1E1F20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px"><svg aria-label="" width="48" height="48" viewBox="0 0 48 48"><g transform="scale(2)" fill="none" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2" /><rect width="6" height="6" x="9" y="9" rx="1" /><path d="M15 2v2" /><path d="M15 20v2" /><path d="M2 15h2" /><path d="M2 9h2" /><path d="M20 15h2" /><path d="M20 9h2" /><path d="M9 2v2" /><path d="M9 20v2" /></g></svg><p style="font-size:32px;text-align:center;line-height:1.2;letter-spacing:1.3px">Sky<br>calculator</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">on your phone</p></div>
+<div data-build="right" data-order="5" style="position:absolute;left:1300px;top:540px;width:492px;background:#1E1F20;border-radius:32px;padding:40px;display:flex;flex-direction:column;gap:16px"><svg aria-label="" width="40" height="40" viewBox="0 0 40 40"><g transform="scale(1.6667)" fill="none" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" /><path d="M20 3v4" /><path d="M22 5h-4" /><path d="M4 17v2" /><path d="M5 18H3" /></g></svg><h3 style="font-size:40px;font-weight:400;letter-spacing:1.6px">Your sky, right now</h3><p style="font-size:28px;line-height:1.5;letter-spacing:0.7px;color:#807F7F">Direction and height of every star, planet and the Moon.</p></div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;padding-top:24px;border-top:1px solid #333333;font-size:24px;letter-spacing:0.6px;color:#807F7F">The Earth's spin turns the sky about 15° every hour, so SkyLens re-does the sums every second, even with no internet.</p>
+
+</section>
+<section id="pointing" data-transition="push" style="background:#000000;color:#FFFFFF;font-family:Geist, Arial, sans-serif;padding:168px 128px 128px;display:flex;flex-direction:column;gap:28px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:88px;background:#181818;border-bottom:1px solid #333333;display:flex;align-items:center;justify-content:space-between;padding:0 128px"><p style="font-size:26px;letter-spacing:6px">SKYLENS</p><div style="display:flex;gap:56px"><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Intro</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">A night out</p><p style="font-size:24px;letter-spacing:0.6px">How it works</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Beyond</p></div><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Beginner's guide  ›</p></div>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#807F7F">05 — How it works</p>
+<h2 style="font-size:72px;font-weight:400;line-height:1.13;letter-spacing:2.9px;width:1500px">How does the phone know where you are pointing?</h2>
+<div data-build="rise" data-order="1" style="position:absolute;left:128px;top:460px;width:840px;background:#1E1F20;border-radius:20px;padding:28px 32px;display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17V3" /><path d="m6 11 6 6 6-6" /><path d="M19 21H5" /></g></svg><p style="font-size:28px;line-height:1.45;letter-spacing:0.7px;color:#807F7F"><span style="color:#FFFFFF">A gravity sensor</span> feels which way is down, so it knows how high you are aiming.</p></div>
+<div data-build="rise" data-order="2" style="position:absolute;left:128px;top:612px;width:840px;background:#1E1F20;border-radius:20px;padding:28px 32px;display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" /><circle cx="12" cy="12" r="10" /></g></svg><p style="font-size:28px;line-height:1.45;letter-spacing:0.7px;color:#807F7F"><span style="color:#FFFFFF">A compass</span> feels the Earth's magnetic north, so it knows which way you face.</p></div>
+<div data-build="rise" data-order="3" style="position:absolute;left:128px;top:764px;width:840px;border:1px solid #333333;border-radius:20px;padding:28px 32px;display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></g></svg><p style="font-size:28px;line-height:1.45;letter-spacing:0.7px;color:#807F7F"><span style="color:#FFFFFF">Compasses wander</span> near metal. Line up the Moon once and SkyLens corrects itself.</p></div>
+<iframe data-build="fade" data-order="1" sandbox="allow-scripts" srcdoc="&lt;style&gt;*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%;background:transparent;overflow:hidden;font-family:system-ui,-apple-system,&quot;Segoe UI&quot;,Roboto,sans-serif;color:#fff;letter-spacing:.02em}
+.box{position:absolute;inset:0;border-radius:32px;background:#1e1f20;overflow:hidden}
+canvas{position:absolute;left:0;top:0}
+.ro{position:absolute;left:24px;right:24px;bottom:20px;border:1px solid #333;border-radius:20px;padding:12px;text-align:center;font-size:26px}
+.ro b{font-weight:400;color:#22e2a8}
+&lt;/style&gt;
+&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c&quot; width=&quot;1520&quot; height=&quot;1000&quot; style=&quot;width:760px;height:500px&quot;&gt;&lt;/canvas&gt;&lt;div class=&quot;ro&quot; id=&quot;ro&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;script&gt;
+const c=document.getElementById(&#x27;c&#x27;),x=c.getContext(&#x27;2d&#x27;),ro=document.getElementById(&#x27;ro&#x27;);x.scale(2,2);
+const pts=&#x27;N NE E SE S SW W NW&#x27;.split(&#x27; &#x27;);let t=0;
+function arrow(x1,y1,x2,y2,col){x.strokeStyle=col;x.fillStyle=col;x.lineWidth=1.5;x.beginPath();x.moveTo(x1,y1);x.lineTo(x2,y2);x.stroke();const a=Math.atan2(y2-y1,x2-x1);x.beginPath();x.moveTo(x2,y2);x.lineTo(x2-13*Math.cos(a-.4),y2-13*Math.sin(a-.4));x.lineTo(x2-13*Math.cos(a+.4),y2-13*Math.sin(a+.4));x.fill()}
+function f(){t+=.012;x.clearRect(0,0,760,500);
+const alt=30+22*Math.sin(t),az=(135+40*Math.sin(t*.6)+360)%360;
+x.setLineDash([6,8]);x.strokeStyle=&#x27;#807f7f&#x27;;x.lineWidth=1.5;x.beginPath();x.moveTo(0,370);x.lineTo(440,370);x.stroke();x.setLineDash([]);
+x.fillStyle=&#x27;#807f7f&#x27;;x.font=&#x27;24px system-ui&#x27;;x.fillText(&#x27;HORIZON&#x27;,24,358);
+const px=150,py=320,a=-alt*Math.PI/180;
+x.strokeStyle=&#x27;rgba(255,255,255,.35)&#x27;;x.lineWidth=1;x.setLineDash([2,6]);x.beginPath();x.moveTo(px,py);x.lineTo(px+400*Math.cos(a),py+400*Math.sin(a));x.stroke();x.setLineDash([]);
+x.save();x.translate(px,py);x.rotate(a+Math.PI/2);x.fillStyle=&#x27;#000&#x27;;x.strokeStyle=&#x27;#fff&#x27;;x.lineWidth=1.5;x.beginPath();x.roundRect(-16,-54,32,108,9);x.fill();x.stroke();x.restore();
+x.strokeStyle=&#x27;#085556&#x27;;x.lineWidth=2;x.beginPath();x.arc(px,py,76,a,0);x.stroke();
+x.fillStyle=&#x27;#fff&#x27;;x.font=&#x27;26px system-ui&#x27;;x.fillText(Math.round(alt)+&#x27;° up&#x27;,px+90,py-12);
+arrow(64,150,64,250,&#x27;#fff&#x27;);x.fillStyle=&#x27;#807f7f&#x27;;x.font=&#x27;24px system-ui&#x27;;x.fillText(&#x27;GRAVITY&#x27;,24,136);
+const cx=600,cy=170,r=100;x.strokeStyle=&#x27;#807f7f&#x27;;x.lineWidth=1;x.beginPath();x.arc(cx,cy,r,0,6.283);x.stroke();x.strokeStyle=&#x27;#085556&#x27;;x.beginPath();x.arc(cx,cy,r-24,0,6.283);x.stroke();
+x.fillStyle=&#x27;#fff&#x27;;x.font=&#x27;24px system-ui&#x27;;x.textAlign=&#x27;center&#x27;;x.fillText(&#x27;N&#x27;,cx,cy-r+28);x.fillText(&#x27;S&#x27;,cx,cy+r-10);x.fillText(&#x27;E&#x27;,cx+r-20,cy+8);x.fillText(&#x27;W&#x27;,cx-r+20,cy+8);
+const b=(az-90)*Math.PI/180;arrow(cx,cy,cx+(r-32)*Math.cos(b),cy+(r-32)*Math.sin(b),&#x27;#22e2a8&#x27;);
+x.fillStyle=&#x27;#807f7f&#x27;;x.fillText(&#x27;COMPASS&#x27;,cx,cy+r+32);x.textAlign=&#x27;left&#x27;;
+ro.innerHTML=&#x27;Aiming &lt;b&gt;&#x27;+Math.round(az)+&#x27;° &#x27;+pts[Math.round(az/45)%8]+&#x27;&lt;/b&gt;, &lt;b&gt;&#x27;+Math.round(alt)+&#x27;°&lt;/b&gt; above the horizon&#x27;;
+requestAnimationFrame(f)}f();
+&lt;/script&gt;" style="position:absolute;left:1032px;top:420px;width:760px;height:500px;border:0;background:transparent;color-scheme:normal"></iframe>
+
+</section>
+<section id="data" data-transition="push" style="background:#000000;color:#FFFFFF;font-family:Geist, Arial, sans-serif;padding:168px 128px 128px;display:flex;flex-direction:column;gap:28px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:88px;background:#181818;border-bottom:1px solid #333333;display:flex;align-items:center;justify-content:space-between;padding:0 128px"><p style="font-size:26px;letter-spacing:6px">SKYLENS</p><div style="display:flex;gap:56px"><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Intro</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">A night out</p><p style="font-size:24px;letter-spacing:0.6px">How it works</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Beyond</p></div><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Beginner's guide  ›</p></div>
+<svg aria-label="" style="position:absolute;left:1212px;top:182px" width="700" height="700" viewBox="0 0 700 700"><defs><radialGradient id="w" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#0A2142"/><stop offset="1" stop-color="#0A2142" stop-opacity="0"/></radialGradient></defs><circle cx="350" cy="350" r="340" fill="url(#w)"/><circle cx="350" cy="350" r="340" fill="none" stroke="#333333" stroke-dasharray="4 10"/><circle cx="350" cy="350" r="280" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="350" cy="350" r="210" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="350" cy="350" r="140" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="548" cy="152" r="5" fill="#FFFFFF"/><circle cx="152" cy="548" r="4" fill="#807F7F"/></svg>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#807F7F">06 — How it works</p>
+<h2 style="font-size:72px;font-weight:400;line-height:1.13;letter-spacing:2.9px;width:1040px">Real NASA data, always labelled</h2>
+<div data-build="rise" data-order="1" style="position:absolute;left:128px;top:440px;width:500px;background:#1E1F20;border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:14px"><svg aria-label="" width="32" height="32" viewBox="0 0 32 32"><g transform="scale(1.3333)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></g></svg><h3 style="font-size:32px;font-weight:400;letter-spacing:0.8px">Picture of the Day</h3><p style="font-size:24px;line-height:1.4;letter-spacing:0.6px;color:#807F7F">NASA's daily space photo, explained</p></div>
+<div data-build="rise" data-order="2" style="position:absolute;left:668px;top:440px;width:500px;background:#1E1F20;border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:14px"><svg aria-label="" width="32" height="32" viewBox="0 0 32 32"><g transform="scale(1.3333)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3" /><circle cx="19" cy="5" r="2" /><circle cx="5" cy="19" r="2" /><path d="M10.4 21.9a10 10 0 0 0 9.941-15.416" /><path d="M13.5 2.1a10 10 0 0 0-9.841 15.416" /></g></svg><h3 style="font-size:32px;font-weight:400;letter-spacing:0.8px">Asteroids passing by</h3><p style="font-size:24px;line-height:1.4;letter-spacing:0.6px;color:#807F7F">NASA's list of close approaches</p></div>
+<div data-build="rise" data-order="3" style="position:absolute;left:128px;top:650px;width:500px;background:#1E1F20;border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:14px"><svg aria-label="" width="32" height="32" viewBox="0 0 32 32"><g transform="scale(1.3333)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></g></svg><h3 style="font-size:32px;font-weight:400;letter-spacing:0.8px">Space weather</h3><p style="font-size:24px;line-height:1.4;letter-spacing:0.6px;color:#807F7F">Alerts for solar flares and storms</p></div>
+<div data-build="rise" data-order="4" style="position:absolute;left:668px;top:650px;width:500px;background:#1E1F20;border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:14px"><svg aria-label="" width="32" height="32" viewBox="0 0 32 32"><g transform="scale(1.3333)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="M20 12h2" /><path d="m19.07 4.93-1.41 1.41" /><path d="M15.947 12.65a4 4 0 0 0-5.925-4.128" /><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z" /></g></svg><h3 style="font-size:32px;font-weight:400;letter-spacing:0.8px">Cloud forecast</h3><p style="font-size:24px;line-height:1.4;letter-spacing:0.6px;color:#807F7F">Open weather data, hour by hour</p></div>
+<div data-build="fade" data-order="5" style="position:absolute;left:128px;top:886px;width:1040px;display:flex;gap:44px;align-items:center">
+<div style="display:flex;gap:12px;align-items:center"><div style="width:12px;height:12px;border-radius:50%;background:#22E2A8"></div><p style="font-size:24px;letter-spacing:0.6px">Live <span style="color:#807F7F">just arrived</span></p></div>
+<div style="display:flex;gap:12px;align-items:center"><div style="width:12px;height:12px;border-radius:50%;border:1.5px solid #FFFFFF"></div><p style="font-size:24px;letter-spacing:0.6px">Saved <span style="color:#807F7F">offline copy</span></p></div>
+<div style="display:flex;gap:12px;align-items:center"><div style="width:12px;height:12px;border-radius:50%;background:#666666"></div><p style="font-size:24px;letter-spacing:0.6px">Sample <span style="color:#807F7F">demo data</span></p></div>
+</div>
+<iframe data-build="rise" data-order="1" sandbox="allow-scripts" srcdoc="&lt;style&gt;*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;background:transparent;overflow:hidden;font-family:system-ui,-apple-system,&quot;Segoe UI&quot;,Roboto,sans-serif;color:#fff;letter-spacing:.02em}
+.ph{position:absolute;left:20px;top:2px;width:420px;height:828px;border-radius:66px;background:#000;border:10px solid #181818;outline:1px solid #333;overflow:hidden;padding:60px 20px 20px;display:flex;flex-direction:column;gap:12px}
+.nt{position:absolute;top:12px;left:140px;width:120px;height:32px;border-radius:16px;background:#181818;z-index:30}
+.top{display:flex;justify-content:space-between;align-items:center}
+h1{font-size:34px;font-weight:400;letter-spacing:1.4px}
+.st{display:flex;gap:8px;align-items:center;font-size:24px;color:#807f7f}
+.st i{width:10px;height:10px;border-radius:50%;background:#22e2a8;transition:all .4s}
+.off .st i{background:transparent;border:1.5px solid #fff}
+.cd{background:#1e1f20;border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.img{height:110px;border-radius:10px;background:radial-gradient(ellipse 42% 14% at 50% 50%,#fff 0%,rgba(255,255,255,.3) 35%,transparent 70%),#000;position:relative;overflow:hidden}
+.img:after{content:&quot;&quot;;position:absolute;inset:0;background:radial-gradient(circle,#fff 1px,transparent 1.5px) 0 0/30px 30px;opacity:.3}
+.t{font-size:26px}
+.mut{font-size:24px;color:#807f7f;line-height:1.35}
+.bd{display:flex;gap:8px;align-items:center;font-size:24px;letter-spacing:.06em;text-transform:uppercase;color:#807f7f}
+.bd i{width:10px;height:10px;border-radius:50%;background:#22e2a8}
+.off .bd i{background:transparent;border:1.5px solid #fff}
+.ts{position:absolute;left:20px;right:20px;bottom:26px;background:#1e1f20;border-radius:20px;padding:12px;font-size:24px;text-align:center;transform:translateY(140px);transition:transform .5s}
+.off .ts{transform:none}
+&lt;/style&gt;
+&lt;div class=&quot;ph&quot; id=&quot;ph&quot;&gt;&lt;div class=&quot;nt&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;top&quot;&gt;&lt;h1&gt;Space today&lt;/h1&gt;&lt;span class=&quot;st&quot;&gt;&lt;i&gt;&lt;/i&gt;&lt;span id=&quot;wf&quot;&gt;Online&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;div class=&quot;cd&quot;&gt;&lt;div class=&quot;img&quot;&gt;&lt;/div&gt;&lt;p class=&quot;t&quot;&gt;Picture of the Day&lt;/p&gt;&lt;p class=&quot;bd&quot;&gt;&lt;i&gt;&lt;/i&gt;&lt;span&gt;Live&lt;/span&gt;&lt;/p&gt;&lt;/div&gt;
+&lt;div class=&quot;cd&quot;&gt;&lt;p class=&quot;t&quot;&gt;Asteroid 2007 TH3&lt;/p&gt;&lt;p class=&quot;mut&quot;&gt;131 Moon-distances away&lt;/p&gt;&lt;p class=&quot;bd&quot;&gt;&lt;i&gt;&lt;/i&gt;&lt;span&gt;Live&lt;/span&gt;&lt;/p&gt;&lt;/div&gt;
+&lt;div class=&quot;cd&quot;&gt;&lt;p class=&quot;t&quot;&gt;Solar flare alert&lt;/p&gt;&lt;p class=&quot;mut&quot;&gt;Issued by NASA&lt;/p&gt;&lt;p class=&quot;bd&quot;&gt;&lt;i&gt;&lt;/i&gt;&lt;span&gt;Live&lt;/span&gt;&lt;/p&gt;&lt;/div&gt;
+&lt;div class=&quot;ts&quot;&gt;No signal: showing saved data&lt;/div&gt;&lt;/div&gt;
+&lt;script&gt;
+const ph=document.getElementById(&#x27;ph&#x27;),wf=document.getElementById(&#x27;wf&#x27;),B=[...document.querySelectorAll(&#x27;.bd span&#x27;)];
+let off=false;function tick(){off=!off;ph.classList.toggle(&#x27;off&#x27;,off);wf.textContent=off?&#x27;Offline&#x27;:&#x27;Online&#x27;;B.forEach(b=&gt;b.textContent=off?&#x27;Saved&#x27;:&#x27;Live&#x27;);setTimeout(tick,off?3600:3200)}
+setTimeout(tick,3200);
+&lt;/script&gt;" style="position:absolute;left:1332px;top:116px;width:460px;height:832px;border:0;background:transparent;color-scheme:normal"></iframe>
+
+</section>
+<section id="everyone" data-transition="fade" style="background:#000000;color:#FFFFFF;font-family:Geist, Arial, sans-serif;padding:168px 128px 128px;display:flex;flex-direction:column;gap:28px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:88px;background:#181818;border-bottom:1px solid #333333;display:flex;align-items:center;justify-content:space-between;padding:0 128px"><p style="font-size:26px;letter-spacing:6px">SKYLENS</p><div style="display:flex;gap:56px"><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Intro</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">A night out</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">How it works</p><p style="font-size:24px;letter-spacing:0.6px">Beyond</p></div><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Beginner's guide  ›</p></div>
+<svg aria-label="" style="position:absolute;left:1212px;top:182px" width="700" height="700" viewBox="0 0 700 700"><defs><radialGradient id="w" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#0A2142"/><stop offset="1" stop-color="#0A2142" stop-opacity="0"/></radialGradient></defs><circle cx="350" cy="350" r="340" fill="url(#w)"/><circle cx="350" cy="350" r="340" fill="none" stroke="#333333" stroke-dasharray="4 10"/><circle cx="350" cy="350" r="280" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="350" cy="350" r="210" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="350" cy="350" r="140" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="548" cy="548" r="5" fill="#FFFFFF"/><circle cx="152" cy="152" r="4" fill="#807F7F"/></svg>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#807F7F">07 — Made for everyone</p>
+<h2 style="font-size:72px;font-weight:400;line-height:1.13;letter-spacing:2.9px;width:1040px">Easy on your eyes, in the dark and in daylight</h2>
+<p style="font-size:32px;line-height:1.6;letter-spacing:0.8px;color:#807F7F;width:1000px">Three looks, bigger text when you need it, and buttons big enough for cold fingers.</p>
+<div data-build="rise" data-order="2" style="position:absolute;left:128px;top:600px;width:1040px;background:#1E1F20;border-radius:32px;padding:40px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /><circle cx="12" cy="12" r="3" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">Night vision red</span> keeps your eyes adjusted to the dark.</p></div>
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 18a6 6 0 0 0 0-12v12z" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">High contrast, large text</span> for low vision.</p></div>
+<div style="display:flex;gap:24px;align-items:center"><svg aria-label="" width="36" height="36" viewBox="0 0 36 36"><g transform="scale(1.5)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2" /><path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2" /><path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8" /><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" /></g></svg><p style="font-size:30px;line-height:1.4;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">Big buttons</span> for one hand or gloves.</p></div>
+</div>
+<iframe data-build="rise" data-order="1" sandbox="allow-scripts" srcdoc="&lt;style&gt;*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;background:transparent;overflow:hidden;font-family:system-ui,-apple-system,&quot;Segoe UI&quot;,Roboto,sans-serif;letter-spacing:.02em}
+.ph{position:absolute;left:20px;top:2px;width:420px;height:828px;border-radius:66px;border:10px solid #181818;outline:1px solid #333;overflow:hidden;padding:60px 22px 22px;display:flex;flex-direction:column;gap:14px;transition:background .8s,color .8s}
+.nt{position:absolute;top:12px;left:140px;width:120px;height:32px;border-radius:16px;background:#181818}
+.lab{font-size:24px;letter-spacing:.06em;text-transform:uppercase;transition:color .8s}
+h1{font-size:40px;font-weight:400;letter-spacing:1.6px;transition:font-size .8s}
+.row{display:flex;align-items:center;gap:14px;border-radius:20px;padding:14px 16px;transition:all .8s}
+.dot{width:12px;height:12px;border-radius:50%;flex:none;transition:background .8s}
+.nm{font-size:26px;transition:font-size .8s}
+.mut{font-size:24px;opacity:.6}
+.btn{margin-top:auto;border-radius:20px;padding:16px;text-align:center;font-size:26px;border:1px solid;transition:all .8s}
+.big h1{font-size:50px}.big .nm{font-size:32px}
+&lt;/style&gt;
+&lt;div class=&quot;ph&quot; id=&quot;ph&quot;&gt;&lt;div class=&quot;nt&quot;&gt;&lt;/div&gt;&lt;p class=&quot;lab&quot; id=&quot;lab&quot;&gt;&lt;/p&gt;&lt;h1&gt;Tonight&lt;/h1&gt;
+&lt;div class=&quot;row&quot;&gt;&lt;span class=&quot;dot&quot;&gt;&lt;/span&gt;&lt;div&gt;&lt;div class=&quot;nm&quot;&gt;Jupiter&lt;/div&gt;&lt;div class=&quot;mut&quot;&gt;ESE · 40° up&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class=&quot;row&quot;&gt;&lt;span class=&quot;dot&quot;&gt;&lt;/span&gt;&lt;div&gt;&lt;div class=&quot;nm&quot;&gt;Saturn&lt;/div&gt;&lt;div class=&quot;mut&quot;&gt;S · 35° up&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class=&quot;row&quot;&gt;&lt;span class=&quot;dot&quot;&gt;&lt;/span&gt;&lt;div&gt;&lt;div class=&quot;nm&quot;&gt;Vega&lt;/div&gt;&lt;div class=&quot;mut&quot;&gt;W · 60° up&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class=&quot;btn&quot; id=&quot;bt&quot;&gt;Start sky view  ›&lt;/div&gt;&lt;/div&gt;
+&lt;script&gt;
+const T=[[&#x27;Space&#x27;,&#x27;#000&#x27;,&#x27;#FFFFFF&#x27;,&#x27;#1e1f20&#x27;,&#x27;#807f7f&#x27;,0],[&#x27;Night vision&#x27;,&#x27;#000&#x27;,&#x27;#E53935&#x27;,&#x27;#1a0606&#x27;,&#x27;#E53935&#x27;,0],[&#x27;High contrast · large text&#x27;,&#x27;#000&#x27;,&#x27;#FFFFFF&#x27;,&#x27;#000&#x27;,&#x27;#FFEB3B&#x27;,1]];
+const ph=document.getElementById(&#x27;ph&#x27;),lab=document.getElementById(&#x27;lab&#x27;),bt=document.getElementById(&#x27;bt&#x27;);let i=0;
+function ap(){const t=T[i];ph.style.background=t[1];ph.style.color=t[2];ph.classList.toggle(&#x27;big&#x27;,!!t[5]);lab.textContent=t[0];lab.style.color=t[4];
+document.querySelectorAll(&#x27;.row&#x27;).forEach(r=&gt;{r.style.background=t[3];r.style.border=t[5]?&#x27;2px solid #fff&#x27;:&#x27;1px solid transparent&#x27;});
+document.querySelectorAll(&#x27;.dot&#x27;).forEach(d=&gt;d.style.background=t[2]);bt.style.borderColor=t[2];bt.style.color=t[2];i=(i+1)%3;setTimeout(ap,3000)}
+ap();
+&lt;/script&gt;" style="position:absolute;left:1332px;top:116px;width:460px;height:832px;border:0;background:transparent;color-scheme:normal"></iframe>
+
+</section>
+<section id="contribute" data-transition="push" style="background:#000000;color:#FFFFFF;font-family:Geist, Arial, sans-serif;padding:168px 128px 128px;display:flex;flex-direction:column;gap:28px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:88px;background:#181818;border-bottom:1px solid #333333;display:flex;align-items:center;justify-content:space-between;padding:0 128px"><p style="font-size:26px;letter-spacing:6px">SKYLENS</p><div style="display:flex;gap:56px"><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Intro</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">A night out</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">How it works</p><p style="font-size:24px;letter-spacing:0.6px">Beyond</p></div><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Beginner's guide  ›</p></div>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#807F7F">08 — From curiosity to contribution</p>
+<h2 style="font-size:72px;font-weight:400;line-height:1.13;letter-spacing:2.9px">Your sightings can help real science</h2>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none" viewBox="0 0 1920 1080"><line x1="514.0" y1="520.0" x2="554.0" y2="520.0" stroke="#666666" stroke-width="2.0" stroke-linecap="round"/><polygon points="554.0,520.0 541.4,526.1 541.4,513.9" fill="#666666"/></svg>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none" viewBox="0 0 1920 1080"><line x1="940.0" y1="520.0" x2="980.0" y2="520.0" stroke="#666666" stroke-width="2.0" stroke-linecap="round"/><polygon points="980.0,520.0 967.4,526.1 967.4,513.9" fill="#666666"/></svg>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none" viewBox="0 0 1920 1080"><line x1="1366.0" y1="520.0" x2="1406.0" y2="520.0" stroke="#666666" stroke-width="2.0" stroke-linecap="round"/><polygon points="1406.0,520.0 1393.4,526.1 1393.4,513.9" fill="#666666"/></svg>
+<div data-build="rise" data-order="1" style="position:absolute;left:128px;top:420px;width:386px;background:#1E1F20;border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:14px"><svg aria-label="" width="32" height="32" viewBox="0 0 32 32"><g transform="scale(1.3333)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /><circle cx="12" cy="12" r="3" /></g></svg><h3 style="font-size:36px;font-weight:400;letter-spacing:1.4px">Spot</h3><p style="font-size:24px;line-height:1.5;letter-spacing:0.6px;color:#807F7F">A meteor, a satellite, a star that changes brightness.</p><p style="font-size:24px;letter-spacing:1px;color:#807F7F">01</p></div>
+<div data-build="rise" data-order="2" style="position:absolute;left:554px;top:420px;width:386px;background:#1E1F20;border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:14px"><svg aria-label="" width="32" height="32" viewBox="0 0 32 32"><g transform="scale(1.3333)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4" /><path d="M2 6h4" /><path d="M2 10h4" /><path d="M2 14h4" /><path d="M2 18h4" /><path d="M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z" /></g></svg><h3 style="font-size:36px;font-weight:400;letter-spacing:1.4px">Record</h3><p style="font-size:24px;line-height:1.5;letter-spacing:0.6px;color:#807F7F">Time, place and direction are saved, plus your notes.</p><p style="font-size:24px;letter-spacing:1px;color:#807F7F">02</p></div>
+<div data-build="rise" data-order="3" style="position:absolute;left:980px;top:420px;width:386px;background:#1E1F20;border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:14px"><svg aria-label="" width="32" height="32" viewBox="0 0 32 32"><g transform="scale(1.3333)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m8 11 2 2 4-4" /><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></g></svg><h3 style="font-size:36px;font-weight:400;letter-spacing:1.4px">Check</h3><p style="font-size:24px;line-height:1.5;letter-spacing:0.6px;color:#807F7F">Compare it with known satellites and sky events.</p><p style="font-size:24px;letter-spacing:1px;color:#807F7F">03</p></div>
+<div data-build="rise" data-order="4" style="position:absolute;left:1406px;top:420px;width:386px;background:#1E1F20;border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:14px"><svg aria-label="" width="32" height="32" viewBox="0 0 32 32"><g transform="scale(1.3333)" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></g></svg><h3 style="font-size:36px;font-weight:400;letter-spacing:1.4px">Share</h3><p style="font-size:24px;line-height:1.5;letter-spacing:0.6px;color:#807F7F">Pass it to citizen-science projects, if you choose.</p><p style="font-size:24px;letter-spacing:1px;color:#807F7F">04</p></div>
+<div data-build="left" data-order="5" style="position:absolute;left:128px;top:760px;width:812px;background:#1E1F20;border-radius:20px;padding:28px 32px;display:flex;gap:22px;align-items:center"><svg aria-label="" width="32" height="32" viewBox="0 0 32 32"><g transform="scale(1.3333)" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></g></svg><div style="display:flex;flex-direction:column;gap:6px"><p style="font-size:24px;letter-spacing:1px;text-transform:uppercase;color:#807F7F">SkyLens says</p><p style="font-size:28px;letter-spacing:0.7px">"This may be worth reporting."</p></div></div>
+<div data-build="right" data-order="6" style="position:absolute;left:980px;top:760px;width:812px;border:1px solid #333333;border-radius:20px;padding:28px 32px;display:flex;gap:22px;align-items:center"><svg aria-label="" width="32" height="32" viewBox="0 0 32 32"><g transform="scale(1.3333)" fill="none" stroke="#807F7F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></g></svg><div style="display:flex;flex-direction:column;gap:6px"><p style="font-size:24px;letter-spacing:1px;text-transform:uppercase;color:#807F7F">SkyLens never says</p><p style="font-size:28px;letter-spacing:0.7px;color:#807F7F">"You discovered a new planet."</p></div></div>
+
+</section>
+<section id="accuracy" data-transition="fade" style="background:#000000;color:#FFFFFF;font-family:Geist, Arial, sans-serif;padding:168px 128px 160px;display:flex;flex-direction:column;gap:28px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:88px;background:#181818;border-bottom:1px solid #333333;display:flex;align-items:center;justify-content:space-between;padding:0 128px"><p style="font-size:26px;letter-spacing:6px">SKYLENS</p><div style="display:flex;gap:56px"><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Intro</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">A night out</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">How it works</p><p style="font-size:24px;letter-spacing:0.6px">Beyond</p></div><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Beginner's guide  ›</p></div>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#807F7F">09 — Can you trust it?</p>
+<h2 style="font-size:72px;font-weight:400;line-height:1.13;letter-spacing:2.9px">Checked against the astronomy textbook</h2>
+<div data-build="fade" data-order="1" style="position:absolute;left:128px;top:440px;width:1664px;display:flex;gap:64px;padding-top:40px;border-top:1px solid #333333">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px"><p style="font-size:120px;line-height:1;letter-spacing:4.8px">2,865</p><p style="font-size:28px;letter-spacing:0.7px;color:#807F7F">stars you can see by eye</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px"><p style="font-size:120px;line-height:1;letter-spacing:4.8px">88</p><p style="font-size:28px;letter-spacing:0.7px;color:#807F7F">constellation figures</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px"><p style="font-size:120px;line-height:1;letter-spacing:4.8px">9</p><p style="font-size:28px;letter-spacing:0.7px;color:#807F7F">Sun, Moon and 7 planets</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px"><p style="font-size:120px;line-height:1;letter-spacing:4.8px">0</p><p style="font-size:28px;letter-spacing:0.7px;color:#807F7F">internet needed for the sky</p></div>
+</div>
+<div data-build="rise" data-order="2" style="position:absolute;left:128px;top:710px;width:1664px;display:flex;gap:28px;align-items:center;background:#1E1F20;border-radius:32px;padding:36px 40px"><svg aria-label="" width="40" height="40" viewBox="0 0 40 40"><g transform="scale(1.6667)" fill="none" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" /><path d="m9 12 2 2 4-4" /></g></svg><p style="font-size:30px;line-height:1.5;letter-spacing:0.75px;color:#807F7F"><span style="color:#FFFFFF">Positions match the textbook's worked answers to within a few arcminutes,</span> finer than the eye can tell. The full Moon is about 30 arcminutes wide.</p></div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;padding-top:24px;border-top:1px solid #333333;font-size:24px;letter-spacing:0.6px;color:#807F7F">Reference: Jean Meeus, Astronomical Algorithms. Star data: HYG Database. Constellation lines: d3-celestial.</p>
+
+</section>
+<section id="close" data-transition="fade" style="background:#000000;color:#FFFFFF;font-family:Geist, Arial, sans-serif;padding:168px 128px 128px;display:flex;flex-direction:column;justify-content:center;gap:40px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:88px;background:#181818;border-bottom:1px solid #333333;display:flex;align-items:center;justify-content:space-between;padding:0 128px"><p style="font-size:26px;letter-spacing:6px">SKYLENS</p><div style="display:flex;gap:56px"><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">Intro</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">A night out</p><p style="font-size:24px;letter-spacing:0.6px;color:#807F7F">How it works</p><p style="font-size:24px;letter-spacing:0.6px">Beyond</p></div><p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Beginner's guide  ›</p></div>
+<svg aria-label="" style="position:absolute;left:1240px;top:200px" width="680" height="680" viewBox="0 0 680 680"><defs><radialGradient id="w" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#0A2142"/><stop offset="1" stop-color="#0A2142" stop-opacity="0"/></radialGradient></defs><circle cx="340" cy="340" r="330" fill="url(#w)"/><circle cx="340" cy="340" r="330" fill="none" stroke="#333333" stroke-dasharray="4 10"/><circle cx="340" cy="340" r="260" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="340" cy="340" r="190" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="340" cy="340" r="120" fill="none" stroke="#085556" stroke-width="1.5"/><circle cx="340" cy="340" r="6" fill="#FFFFFF"/><circle cx="524" cy="156" r="5" fill="#FFFFFF"/><circle cx="150" cy="340" r="5" fill="#22E2A8"/><circle cx="425" cy="425" r="4" fill="#807F7F"/></svg>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#807F7F">SkyLens</p>
+<h1 style="font-size:108px;font-weight:400;line-height:1.13;letter-spacing:4.3px">Look up.<br>Know what you see.</h1>
+<p style="font-size:34px;line-height:1.6;letter-spacing:0.85px;color:#807F7F;width:1000px">Free, honest, and made for first-time stargazers: from "what is that?" to "I saw it" in one evening.</p>
+<div style="display:flex;gap:16px">
+<p style="font-size:24px;letter-spacing:0.6px;border:1px solid #FFFFFF;border-radius:40px;padding:10px 30px">Start stargazing  ›</p>
+<p style="font-size:24px;letter-spacing:0.6px;color:#807F7F;border:1px solid #333333;border-radius:40px;padding:10px 30px">Find</p>
+<p style="font-size:24px;letter-spacing:0.6px;color:#807F7F;border:1px solid #333333;border-radius:40px;padding:10px 30px">Understand</p>
+<p style="font-size:24px;letter-spacing:0.6px;color:#807F7F;border:1px solid #333333;border-radius:40px;padding:10px 30px">Remember</p>
+<p style="font-size:24px;letter-spacing:0.6px;color:#807F7F;border:1px solid #333333;border-radius:40px;padding:10px 30px">Contribute</p>
+</div>
+
+</section>
+</div>
+<div id="bar"></div>
+<div id="hud"><span id="n"></span><button id="pv" aria-label="Previous slide">‹</button><button id="nx" aria-label="Next slide">›</button><button id="fs">Full screen</button></div>
+<script>
+const S=[...document.querySelectorAll('#stage>section')],st=document.getElementById('stage'),n=document.getElementById('n'),bar=document.getElementById('bar');
+document.querySelectorAll('[data-order]').forEach(e=>e.style.animationDelay=(0.15+(e.dataset.order-1)*0.3)+'s');
+let i=Math.max(0,Math.min(S.length-1,(parseInt(location.hash.slice(1))||1)-1));
+function go(k){i=Math.max(0,Math.min(S.length-1,k));S.forEach((s,j)=>s.classList.toggle('active',j==i));document.body.classList.toggle('light',/^background:#F/i.test(S[i].getAttribute('style')));
+n.textContent=String(i+1).padStart(2,'0')+' / '+S.length;bar.style.width=((i+1)/S.length*100)+'%';history.replaceState(null,'','#'+(i+1))}
+function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080);st.style.transform='scale('+s+') translate(-50%,-50%)'}
+addEventListener('resize',fit);fit();go(i);
+addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' ','Enter'].includes(e.key))go(i+1);if(['ArrowLeft','PageUp','Backspace'].includes(e.key))go(i-1);if(e.key=='Home')go(0);if(e.key=='End')go(S.length-1);if(e.key=='f')document.documentElement.requestFullscreen()});
+document.getElementById('nx').onclick=()=>go(i+1);document.getElementById('pv').onclick=()=>go(i-1);
+document.getElementById('fs').onclick=()=>document.documentElement.requestFullscreen();
+</script></body></html>
