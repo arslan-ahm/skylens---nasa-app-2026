@@ -80,6 +80,7 @@ Already automated (`flutter test`): Meeus worked examples, Greenwich solstice ri
 
 - [x] **Pushed to GitHub:** https://github.com/arslan-ahm/skylens---nasa-app-2026 (SSH, no-reply commit identity).
 - [ ] Settings → Pages → Source: **GitHub Actions**.
+- [ ] Repo protection set up as in [REPO_SECURITY.md](REPO_SECURITY.md): rulesets imported, fork-PR approval, secret scanning.
 - [ ] CI is green on `main`: analyze, test, web, APK, Pages.
 - [ ] Open https://arslan-ahm.github.io/skylens---nasa-app-2026/ on a phone and on a desktop.
 - [ ] A teammate does a fresh clone on their machine, then runs `flutter pub get && flutter analyze && flutter test && flutter build web && flutter build apk --debug`. Nothing should depend on local files or keys.

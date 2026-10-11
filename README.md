@@ -4,7 +4,7 @@
 
 A free, cross-platform personal observatory: sky map, AR sky view, Tonight's Sky, observation planner and logbook, NASA data, and a pathway into citizen science.
 
-> **Pre-hackathon status:** This repo holds only reusable infrastructure built before NASA Space Apps Challenge 2026. Challenge-specific work starts when the event opens. See [docs/PREPARED_BEFORE_EVENT.md](docs/PREPARED_BEFORE_EVENT.md) for the full disclosure, and [docs/PRE_EVENT_CHECKLIST.md](docs/PRE_EVENT_CHECKLIST.md) for what's left to test before the event.
+> **Pre-hackathon status:** This repo holds only reusable infrastructure built before NASA Space Apps Challenge 2026. Challenge-specific work starts when the event opens. See [docs/PREPARED_BEFORE_EVENT.md](docs/PREPARED_BEFORE_EVENT.md) for the full disclosure, and [docs/PRE_EVENT_CHECKLIST.md](docs/PRE_EVENT_CHECKLIST.md) for what's left to test before the event. Contribution rules and repo protection: [docs/REPO_SECURITY.md](docs/REPO_SECURITY.md).
 
 **Honest positioning:** SkyLens is not a telescope and makes no discovery claims. Any AI feature only explains verified data and cites its sources.
 

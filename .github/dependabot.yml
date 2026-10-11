@@ -1,0 +1,8 @@
+# Security updates for the CI actions only. App packages are frozen before
+# the event (see docs/PRE_EVENT_CHECKLIST.md), so pub updates stay manual.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

@@ -3,6 +3,8 @@
 ## Branches
 `feat/<short-name>`, `fix/<short-name>`, `docs/<short-name>`, `chore/<short-name>`. Branch from `main` and merge back often (at least every 3 h on hackathon day).
 
+`main` is protected: changes land only through a pull request with a green **Analyze, test, build web** check. There is no force-pushing. Only team members (collaborators) can merge. Everyone else is welcome to fork and open a PR. See [docs/REPO_SECURITY.md](docs/REPO_SECURITY.md).
+
 ## Commits
 Use Conventional-style messages: `feat(astro): add moon phase`, `fix(sensors): clamp altitude`, `docs: update data sources`. Keep commits small and focused.
 
