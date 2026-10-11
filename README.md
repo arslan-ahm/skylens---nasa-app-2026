@@ -27,7 +27,7 @@ Infrastructure available in the starter (verified in the in-app **Dev Lab**):
 - NASA data: APOD, NeoWs, DONKI, NASA Image & Video Library
 - Weather (cloud cover) from Open-Meteo
 - Local observation logbook (Hive)
-- Dark, night-vision red, and high-contrast themes
+- Cosmos design system from [DESIGN.md](DESIGN.md), plus night-vision red and high-contrast themes
 
 > TODO (hackathon day): List the user-facing features built for the chosen challenge.
 
@@ -74,7 +74,7 @@ app/lib/
     sensors/    Location, device orientation, sky projector (AR)
     network/    dio client, TTL cache fetcher, DataProvenance
     storage/    Hive CE boxes
-    theme/      Dark, night-vision red, high-contrast
+    theme/      Cosmos design system (DESIGN.md), night-vision red, high-contrast
     widgets/    UI kit: cards, attribution badge, states, sheets, observation form
   data/         NASA clients (APOD, NeoWs, DONKI, Image Library), Open-Meteo
   features/
@@ -162,4 +162,6 @@ See [docs/TEAM_ROLES.md](docs/TEAM_ROLES.md).
 - Constellation data: d3-celestial (Olaf Frohn), BSD-3-Clause
 - NASA data and imagery: courtesy of NASA. Individual APOD images may be copyrighted by their authors, as noted in the API response.
 - Weather data: Open-Meteo.com, CC BY 4.0
+- Typeface: Geist by Vercel, SIL Open Font License 1.1 (`app/assets/fonts/Geist-OFL.txt`)
+- Icons in the beginner guide deck: Lucide, ISC License
 - This project is not endorsed by NASA.

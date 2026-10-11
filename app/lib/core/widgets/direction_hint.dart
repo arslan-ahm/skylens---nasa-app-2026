@@ -21,7 +21,7 @@ const _long = {
   'N': 'north',
   'NNE': 'north-north-east',
   'NE': 'north-east',
-  'ENE': 'east-north-east', //
+  'ENE': 'east-north-east',
   'E': 'east',
   'ESE': 'east-south-east',
   'SE': 'south-east',
@@ -36,7 +36,7 @@ const _long = {
   'NNW': 'north-north-west',
 };
 
-/// Mini compass + altitude gauge showing where to look.
+/// Mini compass (rim = horizon, centre = overhead) + the sentence.
 class DirectionHint extends StatelessWidget {
   const DirectionHint(this.target, {super.key, this.size = 72});
 
@@ -48,15 +48,22 @@ class DirectionHint extends StatelessWidget {
     final t = SkyTokens.of(context);
     return Semantics(
       label: directionSentence(target),
-      child: Row(
-        children: [
-          SizedBox.square(
-            dimension: size,
-            child: CustomPaint(painter: _CompassPainter(target, t)),
-          ),
-          const SizedBox(width: 16),
-          Expanded(child: Text(directionSentence(target))),
-        ],
+      child: ExcludeSemantics(
+        child: Row(
+          children: [
+            SizedBox.square(
+              dimension: size,
+              child: CustomPaint(painter: _CompassPainter(target, t)),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                directionSentence(target),
+                style: skyText(16, 1.6, 0.4).copyWith(color: t.ink),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -71,12 +78,23 @@ class _CompassPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final c = size.center(Offset.zero);
-    final r = size.shortestSide / 2 - 2;
-    final ring = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5
-      ..color = t.inkMuted;
-    canvas.drawCircle(c, r, ring);
+    final r = size.shortestSide / 2 - 1;
+    canvas.drawCircle(
+      c,
+      r,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1
+        ..color = t.inkMuted,
+    );
+    canvas.drawCircle(
+      c,
+      r * 0.62,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1
+        ..color = t.diagram,
+    );
 
     // Altitude as distance from the rim (rim = horizon, centre = zenith).
     final rho = r * (1 - target.alt.clamp(0, 90) / 90);
@@ -86,26 +104,24 @@ class _CompassPainter extends CustomPainter {
       c,
       p,
       Paint()
-        ..color = t.accent.withValues(alpha: 0.5)
-        ..strokeWidth = 2,
+        ..color = t.ink.withValues(alpha: 0.4)
+        ..strokeWidth = 1,
     );
-    canvas.drawCircle(p, 5, Paint()..color = t.accent);
+    canvas.drawCircle(c, 2, Paint()..color = t.ink);
+    // The target is the active element: Signal Mint.
+    canvas.drawCircle(p, 4.5, Paint()..color = t.live);
 
     final tp = TextPainter(
       text: TextSpan(
         text: 'N',
-        style: TextStyle(
-          color: t.ink,
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-        ),
+        style: skyText(11, 1.2, 0.4).copyWith(color: t.ink),
       ),
       textDirection: TextDirection.ltr,
     )..layout();
-    tp.paint(canvas, Offset(c.dx - tp.width / 2, c.dy - r + 2));
+    tp.paint(canvas, Offset(c.dx - tp.width / 2, c.dy - r + 3));
   }
 
   @override
   bool shouldRepaint(_CompassPainter old) =>
-      old.target.az != target.az || old.target.alt != target.alt;
+      old.target.az != target.az || old.target.alt != target.alt || old.t != t;
 }

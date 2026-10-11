@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_theme.dart';
+import 'cosmos.dart';
+
 /// Values captured by [ObservationForm].
 class ObservationDraft {
   const ObservationDraft({
@@ -37,6 +40,8 @@ class _ObservationFormState extends State<ObservationForm> {
   final _notes = TextEditingController();
   int _sky = 3;
   String _equipment = 'Naked eye';
+
+  static const _skyLabels = ['Poor', 'Fair', 'OK', 'Good', 'Excellent'];
 
   static const _equipmentOptions = [
     'Naked eye',
@@ -78,25 +83,42 @@ class _ObservationFormState extends State<ObservationForm> {
             validator: (v) =>
                 (v == null || v.trim().isEmpty) ? 'Required' : null,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           TextFormField(
             controller: _notes,
             minLines: 2,
             maxLines: 5,
             decoration: const InputDecoration(labelText: 'Notes (optional)'),
           ),
-          const SizedBox(height: 16),
-          Text('Sky conditions', style: Theme.of(context).textTheme.labelLarge),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              const CategoryTag('Sky conditions'),
+              const Spacer(),
+              Text(
+                _skyLabels[_sky - 1],
+                style: skyText(
+                  14,
+                  1.43,
+                  0.28,
+                ).copyWith(color: SkyTokens.of(context).ink),
+              ),
+            ],
+          ),
           Slider(
             value: _sky.toDouble(),
             min: 1,
             max: 5,
             divisions: 4,
-            label: const ['Poor', 'Fair', 'OK', 'Good', 'Excellent'][_sky - 1],
+            label: _skyLabels[_sky - 1],
             onChanged: (v) => setState(() => _sky = v.round()),
           ),
+          const SizedBox(height: 8),
+          const CategoryTag('Equipment'),
+          const SizedBox(height: 12),
           Wrap(
             spacing: 8,
+            runSpacing: 8,
             children: [
               for (final e in _equipmentOptions)
                 ChoiceChip(
@@ -106,11 +128,13 @@ class _ObservationFormState extends State<ObservationForm> {
                 ),
             ],
           ),
-          const SizedBox(height: 20),
-          FilledButton.icon(
-            onPressed: _submit,
-            icon: const Icon(Icons.bookmark_add_outlined),
-            label: const Text('Save observation'),
+          const SizedBox(height: 28),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: GhostPillButton(
+              label: 'Save observation',
+              onPressed: _submit,
+            ),
           ),
         ],
       ),

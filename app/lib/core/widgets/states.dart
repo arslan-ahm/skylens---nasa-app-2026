@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../theme/app_theme.dart';
+import 'cosmos.dart';
 
 class LoadingState extends StatelessWidget {
   const LoadingState({super.key, this.message});
@@ -9,23 +10,35 @@ class LoadingState extends StatelessWidget {
   final String? message;
 
   @override
-  Widget build(BuildContext context) => Center(
-    child: Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const CircularProgressIndicator(),
-          if (message != null) ...[
-            const SizedBox(height: 16),
-            Text(message!, textAlign: TextAlign.center),
+  Widget build(BuildContext context) {
+    final t = SkyTokens.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox.square(
+              dimension: 28,
+              child: CircularProgressIndicator(strokeWidth: 1.5),
+            ),
+            if (message != null) ...[
+              const SizedBox(height: 16),
+              Text(
+                message!,
+                textAlign: TextAlign.center,
+                style: skyText(14, 1.43, 0.28).copyWith(color: t.inkMuted),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
+/// Empty state: a small globe diagram with the line icon at its centre,
+/// a title, a Slate message and an optional ghost-pill action.
 class EmptyState extends StatelessWidget {
   const EmptyState({
     super.key,
@@ -45,23 +58,27 @@ class EmptyState extends StatelessWidget {
     final t = SkyTokens.of(context);
     final text = Theme.of(context).textTheme;
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 48, color: t.inkMuted),
+            GlobeDiagram(
+              size: 120,
+              rings: 2,
+              child: Icon(icon, size: 28, color: t.ink),
+            ),
             const SizedBox(height: 16),
-            Text(title, style: text.titleMedium, textAlign: TextAlign.center),
+            Text(title, style: text.titleLarge, textAlign: TextAlign.center),
             if (message != null) ...[
               const SizedBox(height: 8),
               Text(
                 message!,
-                style: text.bodyMedium!.copyWith(color: t.inkMuted),
+                style: text.bodyLarge!.copyWith(color: t.inkMuted),
                 textAlign: TextAlign.center,
               ),
             ],
-            if (action != null) ...[const SizedBox(height: 20), action!],
+            if (action != null) ...[const SizedBox(height: 24), action!],
           ],
         ),
       ),
@@ -82,11 +99,7 @@ class ErrorState extends StatelessWidget {
     message: '$error',
     action: onRetry == null
         ? null
-        : OutlinedButton.icon(
-            onPressed: onRetry,
-            icon: const Icon(Icons.refresh),
-            label: const Text('Try again'),
-          ),
+        : GhostPillButton(label: 'Try again', onPressed: onRetry),
   );
 }
 

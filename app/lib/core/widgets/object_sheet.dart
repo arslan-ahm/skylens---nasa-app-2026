@@ -5,10 +5,13 @@ import '../astro/rise_set.dart';
 import '../astro/sky_engine.dart';
 import '../network/provenance.dart';
 import '../theme/app_theme.dart';
+import 'cosmos.dart';
 import 'direction_hint.dart';
 import 'sky_card.dart';
 import 'source_badge.dart';
 
+/// Sky-chart colour for an object (monochrome in Cosmos; tinted in the
+/// accessibility themes).
 Color colorForObject(SkyObject o, SkyTokens t) => switch (o.kind) {
   SkyObjectKind.sun => t.sun,
   SkyObjectKind.moon => t.moon,
@@ -61,32 +64,21 @@ class _ObjectSheetBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = SkyTokens.of(context);
     final text = Theme.of(context).textTheme;
     final hm = DateFormat.Hm();
     String fmt(DateTime? d) => d == null ? '—' : hm.format(d.toLocal());
-    final color = colorForObject(o, t);
 
     return ListView(
       controller: scroll,
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
       children: [
-        Row(
-          children: [
-            Icon(iconForObject(o), color: color, size: 32),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(o.name, style: text.headlineSmall),
-                  Text(kindLabel(o), style: TextStyle(color: t.inkMuted)),
-                ],
-              ),
-            ),
-          ],
+        CategoryTag(kindLabel(o)),
+        const SizedBox(height: 8),
+        Semantics(
+          header: true,
+          child: Text(o.name, style: text.headlineMedium),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 24),
         DirectionHint(o.horizontal),
         const SizedBox(height: 16),
         FactRow('Altitude', '${o.horizontal.alt.toStringAsFixed(1)}°'),
@@ -116,7 +108,7 @@ class _ObjectSheetBody extends StatelessWidget {
             '${fmt(rs!.transit)} at ${rs!.transitAltitude.toStringAsFixed(0)}°',
           ),
         ],
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
         SourceBadge(
           DataProvenance(
             source: 'SkyLens astronomy engine',

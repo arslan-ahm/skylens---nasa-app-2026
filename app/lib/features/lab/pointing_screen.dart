@@ -8,6 +8,7 @@ import '../../core/providers.dart';
 import '../../core/sensors/pointing_math.dart';
 import '../../core/settings/app_settings.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/cosmos.dart';
 import '../../core/widgets/object_sheet.dart';
 
 /// Proves the AR pipeline: camera preview + sensor pose + projection.
@@ -108,10 +109,7 @@ class _PointingScreenState extends ConsumerState<PointingScreen>
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: const Text('Pointing / AR test'),
-        backgroundColor: Colors.black,
-      ),
+      appBar: AppBar(title: const Text('Pointing / AR test')),
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -167,11 +165,7 @@ class _PointingScreenState extends ConsumerState<PointingScreen>
           // Centre reticle.
           IgnorePointer(
             child: Center(
-              child: Icon(
-                Icons.add,
-                color: t.accent.withValues(alpha: 0.7),
-                size: 32,
-              ),
+              child: Icon(Icons.add, color: t.ink, size: 32, weight: 200),
             ),
           ),
           Positioned(
@@ -179,9 +173,8 @@ class _PointingScreenState extends ConsumerState<PointingScreen>
             right: 12,
             bottom: 12,
             child: Card(
-              color: t.surface.withValues(alpha: 0.85),
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -193,7 +186,7 @@ class _PointingScreenState extends ConsumerState<PointingScreen>
                     ),
                     Row(
                       children: [
-                        const Text('FOV'),
+                        const CategoryTag('FOV'),
                         Expanded(
                           child: Slider(
                             value: settings.cameraFovDeg,
@@ -209,10 +202,9 @@ class _PointingScreenState extends ConsumerState<PointingScreen>
                       ],
                     ),
                     if (pose != null && calibTarget != null)
-                      OutlinedButton.icon(
+                      GhostPillButton(
                         onPressed: () => _calibrate(pose, calibTarget),
-                        icon: const Icon(Icons.center_focus_strong),
-                        label: Text('Centre ${calibTarget.name} & calibrate'),
+                        label: 'Centre ${calibTarget.name} & calibrate',
                       ),
                   ],
                 ),
@@ -250,7 +242,7 @@ class _OverlayPainter extends CustomPainter {
       horizon,
       Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2
+        ..strokeWidth = 1.5
         ..color = t.horizon,
     );
 
@@ -267,19 +259,19 @@ class _OverlayPainter extends CustomPainter {
         r + 6,
         Paint()
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 1.5
+          ..strokeWidth = 1
           ..color = color.withValues(alpha: 0.8),
       );
       if (o.kind != SkyObjectKind.star || o.magnitude < 2) {
         final tp = TextPainter(
           text: TextSpan(
             text: o.name,
-            style: TextStyle(
-              color: color,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              shadows: const [Shadow(blurRadius: 3)],
-            ),
+            // Shadow only for legibility over the camera image.
+            style: skyText(
+              13,
+              1.2,
+              0.5,
+            ).copyWith(color: color, shadows: const [Shadow(blurRadius: 3)]),
           ),
           textDirection: TextDirection.ltr,
         )..layout();

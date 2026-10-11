@@ -129,14 +129,23 @@ class _DomePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final c = proj.centre, r = proj.radius;
-    canvas.drawCircle(c, r, Paint()..color = t.surface);
+    // DESIGN.md globe visualization: Deep Navy wash, Concentric Teal rings.
+    canvas.drawCircle(
+      c,
+      r,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [t.wash, t.wash.withValues(alpha: 0.35)],
+        ).createShader(Rect.fromCircle(center: c, radius: r)),
+    );
     canvas.save();
     canvas.clipPath(Path()..addOval(Rect.fromCircle(center: c, radius: r)));
 
     // Altitude rings at 30° and 60°.
     final grid = Paint()
       ..style = PaintingStyle.stroke
-      ..color = t.inkMuted.withValues(alpha: 0.18);
+      ..strokeWidth = 1
+      ..color = t.diagram;
     canvas.drawCircle(c, r * 2 / 3, grid);
     canvas.drawCircle(c, r / 3, grid);
 
@@ -169,8 +178,8 @@ class _DomePainter extends CustomPainter {
           radius + 6,
           Paint()
             ..style = PaintingStyle.stroke
-            ..strokeWidth = 2
-            ..color = t.accent,
+            ..strokeWidth = 1.5
+            ..color = t.live,
         );
       }
       if (o.kind != SkyObjectKind.star || o.magnitude < 1.5) {
@@ -184,7 +193,7 @@ class _DomePainter extends CustomPainter {
       r,
       Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2
+        ..strokeWidth = 1.5
         ..color = t.horizon,
     );
     for (final (label, az) in [
@@ -194,26 +203,15 @@ class _DomePainter extends CustomPainter {
       ('W', 270.0),
     ]) {
       final p = proj.toScreen(Horizontal(az, -10));
-      _label(canvas, label, p - const Offset(4, 7), t.ink, 13, bold: true);
+      _label(canvas, label, p - const Offset(4, 7), t.ink, 13);
     }
   }
 
-  void _label(
-    Canvas canvas,
-    String s,
-    Offset at,
-    Color color,
-    double size, {
-    bool bold = false,
-  }) {
+  void _label(Canvas canvas, String s, Offset at, Color color, double size) {
     final tp = TextPainter(
       text: TextSpan(
         text: s,
-        style: TextStyle(
-          color: color,
-          fontSize: size,
-          fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
-        ),
+        style: skyText(size, 1.2, size * 0.04).copyWith(color: color),
       ),
       textDirection: TextDirection.ltr,
     )..layout();

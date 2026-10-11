@@ -74,6 +74,14 @@ flutter:
     - assets/catalog/
     - assets/mock/
 
+  # Geist (Vercel), SIL Open Font License 1.1 — see assets/fonts/Geist-OFL.txt.
+  # Only weight 400 is bundled: DESIGN.md uses a single weight.
+  fonts:
+    - family: Geist
+      fonts:
+        - asset: assets/fonts/Geist-Regular.ttf
+          weight: 400
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

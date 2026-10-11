@@ -18,6 +18,10 @@ void main() {
   );
 
   testWidgets('Lab home lists every lab', (tester) async {
+    // Tall phone viewport so the lazy list builds every entry.
+    tester.view.physicalSize = const Size(1080, 4000);
+    tester.view.devicePixelRatio = 2;
+    addTearDown(tester.view.reset);
     await tester.pumpWidget(_wrap(const LabHomeScreen()));
     for (final title in [
       'Sky engine',
