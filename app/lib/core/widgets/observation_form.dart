@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
-import 'cosmos.dart';
+import 'design_components.dart';
 
 /// Values captured by [ObservationForm].
 class ObservationDraft {

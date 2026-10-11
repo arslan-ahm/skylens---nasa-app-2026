@@ -27,7 +27,7 @@ Infrastructure available in the starter (verified in the in-app **Dev Lab**):
 - NASA data: APOD, NeoWs, DONKI, NASA Image & Video Library
 - Weather (cloud cover) from Open-Meteo
 - Local observation logbook (Hive)
-- Cosmos design system from [DESIGN.md](DESIGN.md), plus night-vision red and high-contrast themes
+- Flat dark design system ([docs/DESIGN_TOKENS.md](docs/DESIGN_TOKENS.md)), plus night-vision red and high-contrast themes
 
 > TODO (hackathon day): List the user-facing features built for the chosen challenge.
 
@@ -74,7 +74,7 @@ app/lib/
     sensors/    Location, device orientation, sky projector (AR)
     network/    dio client, TTL cache fetcher, DataProvenance
     storage/    Hive CE boxes
-    theme/      Cosmos design system (DESIGN.md), night-vision red, high-contrast
+    theme/      Design system (docs/DESIGN_TOKENS.md), night-vision red, high-contrast
     widgets/    UI kit: cards, attribution badge, states, sheets, observation form
   data/         NASA clients (APOD, NeoWs, DONKI, Image Library), Open-Meteo
   features/

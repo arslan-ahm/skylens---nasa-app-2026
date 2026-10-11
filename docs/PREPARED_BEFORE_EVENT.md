@@ -17,7 +17,7 @@ This file is our transparent record. We link it from the README and summarise it
 | **Pointing / AR test** ⚑ | `app/lib/core/sensors/`, `app/lib/features/lab/` | Location service with fallback, device orientation → az/alt, compass offset calibration, sky projector (world direction → screen point). |
 | Network layer | `app/lib/core/network/` | dio client, TTL cache-through fetcher, `DataProvenance` metadata. |
 | Storage | `app/lib/core/storage/` | Hive CE boxes (settings, cache, logbook). |
-| Design system | `app/lib/core/theme/`, `app/lib/core/widgets/cosmos.dart`, `DESIGN.md` | Cosmos theme built from DESIGN.md (flat black/Carbon/Graphite surfaces, Geist 400, ghost pill buttons, stat strip, carousel dots, globe diagram, live indicator), plus night-vision red and high-contrast variants. |
+| Design system | `app/lib/core/theme/`, `app/lib/core/widgets/design_components.dart`, `docs/DESIGN_TOKENS.md` | SkyLens design tokens (flat black/Carbon/Graphite surfaces, Geist 400, ghost pill buttons, stat strip, carousel dots, globe diagram, live indicator), plus night-vision red and high-contrast variants. |
 | UI kit | `app/lib/core/widgets/` | Cards, attribution badge, empty/error/loading states, object detail sheet, direction hint, observation form, **`SkyDome` all-sky chart** ⚑. |
 | Data clients | `app/lib/data/` | NASA APOD, NeoWs, DONKI, Image & Video Library; Open-Meteo. Mock fixtures in `app/assets/mock/`. |
 | Dev Lab | `app/lib/features/lab/` | Debug screens that check each module on a device. |

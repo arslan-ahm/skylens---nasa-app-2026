@@ -129,7 +129,7 @@ class _DomePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final c = proj.centre, r = proj.radius;
-    // DESIGN.md globe visualization: Deep Navy wash, Concentric Teal rings.
+    // DESIGN_TOKENS.md globe visualization: Deep Navy wash, Concentric Teal rings.
     canvas.drawCircle(
       c,
       r,

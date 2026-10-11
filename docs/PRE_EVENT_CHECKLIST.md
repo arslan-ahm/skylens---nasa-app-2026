@@ -91,7 +91,7 @@ Clean-clone build verified locally on 2026-10-11: analyze, 39 tests, web release
 - [x] Package and asset licences reviewed: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). No GPL.
 - [x] Git history scanned for keys, personal paths and phone numbers. None found.
 - [ ] **Commit author identity:** history currently shows one personal work email. Decide whether that's fine for a public repo **before the first push**.
-- [ ] `DESIGN.md` describes a third party's visual style. Decide whether it stays in the public repo or gets renamed to a neutral "SkyLens design tokens".
+- [x] Design doc is SkyLens's own: [DESIGN_TOKENS.md](DESIGN_TOKENS.md) (no third-party branding).
 - [ ] [PREPARED_BEFORE_EVENT.md](PREPARED_BEFORE_EVENT.md) is accurate and linked from the README.
 
 ## 7. Submission readiness

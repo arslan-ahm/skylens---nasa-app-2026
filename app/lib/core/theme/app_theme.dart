@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-// SkyLens design system, based on DESIGN.md ("Cosmos Network"):
-// - near-black canvas, white type doing all the work, one typeface (Geist,
-//   the documented substitute for "The Future") at weight 400 only, with
-//   positive letter-spacing at every size;
+// SkyLens design system (docs/DESIGN_TOKENS.md):
+// - near-black canvas, white type doing all the work, one typeface (Geist)
+//   at weight 400 only, with positive letter-spacing at every size;
 // - flat elevation by tone only: Void #000 -> Carbon #181818 (bars) ->
 //   Graphite #1E1F20 (cards); hairlines in Iron #333; no shadows or blur;
 // - ghost (outlined) pill buttons, never filled;
@@ -19,7 +18,7 @@ enum SkyThemeVariant { space, nightRed, highContrast }
 
 extension SkyThemeVariantLabel on SkyThemeVariant {
   String get label => switch (this) {
-    SkyThemeVariant.space => 'Cosmos',
+    SkyThemeVariant.space => 'Space',
     SkyThemeVariant.nightRed => 'Night vision (red)',
     SkyThemeVariant.highContrast => 'High contrast',
   };
@@ -107,7 +106,7 @@ class SkyTokens extends ThemeExtension<SkyTokens> {
   static SkyTokens of(BuildContext context) =>
       Theme.of(context).extension<SkyTokens>()!;
 
-  static const cosmos = SkyTokens(
+  static const space = SkyTokens(
     sky: Color(0xFF000000),
     carbon: Color(0xFF181818),
     surface: Color(0xFF1E1F20),
@@ -183,7 +182,7 @@ class SkyTokens extends ThemeExtension<SkyTokens> {
       t < 0.5 ? this : (other ?? this);
 }
 
-/// One step of the DESIGN.md type scale: weight 400, positive tracking.
+/// One step of the DESIGN_TOKENS.md type scale: weight 400, positive tracking.
 TextStyle skyText(double size, double height, double tracking) => TextStyle(
   fontFamily: kFontFamily,
   fontSize: size,
@@ -192,7 +191,7 @@ TextStyle skyText(double size, double height, double tracking) => TextStyle(
   fontWeight: FontWeight.w400,
 );
 
-/// DESIGN.md type scale mapped onto Material roles.
+/// DESIGN_TOKENS.md type scale mapped onto Material roles.
 TextTheme _textTheme(Color ink) => TextTheme(
   displayLarge: skyText(60, 1.13, 2.4), // display
   displayMedium: skyText(36, 1.13, 0.9), // heading
@@ -213,7 +212,7 @@ TextTheme _textTheme(Color ink) => TextTheme(
 
 ThemeData buildSkyTheme(SkyThemeVariant variant) {
   final t = switch (variant) {
-    SkyThemeVariant.space => SkyTokens.cosmos,
+    SkyThemeVariant.space => SkyTokens.space,
     SkyThemeVariant.nightRed => SkyTokens.nightRed,
     SkyThemeVariant.highContrast => SkyTokens.highContrast,
   };

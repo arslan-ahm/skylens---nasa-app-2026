@@ -5,14 +5,14 @@ import '../../core/astro/coordinates.dart';
 import '../../core/network/provenance.dart';
 import '../../core/settings/app_settings.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/cosmos.dart';
+import '../../core/widgets/design_components.dart';
 import '../../core/widgets/direction_hint.dart';
 import '../../core/widgets/observation_form.dart';
 import '../../core/widgets/sky_card.dart';
 import '../../core/widgets/source_badge.dart';
 import '../../core/widgets/states.dart';
 
-/// Design-system gallery (DESIGN.md components) + app-wide display settings.
+/// Design-system gallery (DESIGN_TOKENS.md components) + app-wide display settings.
 class UiKitScreen extends ConsumerStatefulWidget {
   const UiKitScreen({super.key});
 

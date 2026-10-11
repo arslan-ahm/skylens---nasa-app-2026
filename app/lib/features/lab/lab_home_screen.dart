@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/config/app_config.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/cosmos.dart';
+import '../../core/widgets/design_components.dart';
 
 /// Dev Lab: one screen per infrastructure piece, to verify it on a real
 /// device. Keep it as a hidden debug menu once the product shell exists.

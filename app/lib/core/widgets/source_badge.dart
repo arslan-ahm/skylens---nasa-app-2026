@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../network/provenance.dart';
 import '../theme/app_theme.dart';
-import 'cosmos.dart';
+import 'design_components.dart';
 
 /// Compact attribution line: "● NASA APOD · LIVE · Oct 11 21:04 · licence".
 /// Put one under every card that shows external or computed data.

@@ -5,12 +5,12 @@ import '../astro/rise_set.dart';
 import '../astro/sky_engine.dart';
 import '../network/provenance.dart';
 import '../theme/app_theme.dart';
-import 'cosmos.dart';
+import 'design_components.dart';
 import 'direction_hint.dart';
 import 'sky_card.dart';
 import 'source_badge.dart';
 
-/// Sky-chart colour for an object (monochrome in Cosmos; tinted in the
+/// Sky-chart colour for an object (monochrome in Space; tinted in the
 /// accessibility themes).
 Color colorForObject(SkyObject o, SkyTokens t) => switch (o.kind) {
   SkyObjectKind.sun => t.sun,

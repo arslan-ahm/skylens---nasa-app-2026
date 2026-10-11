@@ -76,7 +76,7 @@ flutter:
     - assets/fonts/Geist-OFL.txt
 
   # Geist (Vercel), SIL Open Font License 1.1 — see assets/fonts/Geist-OFL.txt.
-  # Only weight 400 is bundled: DESIGN.md uses a single weight.
+  # Only weight 400 is bundled: the design system uses a single weight.
   fonts:
     - family: Geist
       fonts:

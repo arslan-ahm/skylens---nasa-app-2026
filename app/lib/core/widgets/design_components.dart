@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 
-// DESIGN.md components: ghost pill button, category tag, stat strip,
+// DESIGN_TOKENS.md components: ghost pill button, category tag, stat strip,
 // carousel dots, live indicator, globe (concentric-ring) diagram and a
 // section header. All flat, weight 400, white-first.
 
@@ -278,7 +278,7 @@ class GlobeNode {
   final bool live;
 }
 
-/// DESIGN.md "globe visualization": concentric Teal rings over a Deep Navy
+/// DESIGN_TOKENS.md "globe visualization": concentric Teal rings over a Deep Navy
 /// wash, white nodes with uppercase annotation labels. Use it as hero art,
 /// in empty states, or behind a centred [child].
 class GlobeDiagram extends StatefulWidget {

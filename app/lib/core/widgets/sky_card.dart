@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../network/provenance.dart';
 import '../theme/app_theme.dart';
-import 'cosmos.dart';
+import 'design_components.dart';
 import 'source_badge.dart';
 
-/// DESIGN.md card surface: flat Graphite, 20px radius, no border or shadow.
+/// DESIGN_TOKENS.md card surface: flat Graphite, 20px radius, no border or shadow.
 /// Optional line icon, title, subtitle, body, category tag and an
 /// attribution footer.
 class SkyCard extends StatelessWidget {

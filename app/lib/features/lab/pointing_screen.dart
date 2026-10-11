@@ -8,7 +8,7 @@ import '../../core/providers.dart';
 import '../../core/sensors/pointing_math.dart';
 import '../../core/settings/app_settings.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/cosmos.dart';
+import '../../core/widgets/design_components.dart';
 import '../../core/widgets/object_sheet.dart';
 
 /// Proves the AR pipeline: camera preview + sensor pose + projection.
