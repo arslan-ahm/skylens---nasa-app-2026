@@ -36,7 +36,7 @@ jobs:
       - run: flutter test
       - run: flutter build web --release --dart-define=DATA_MODE=mock --base-href "/${{ github.event.repository.name }}/"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: web-build
           path: app/build/web
@@ -69,7 +69,7 @@ jobs:
       - run: flutter pub get
       - run: flutter build apk --debug
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: skylens-debug-apk
           path: app/build/app/outputs/flutter-apk/app-debug.apk
