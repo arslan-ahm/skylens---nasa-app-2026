@@ -212,6 +212,7 @@ class MoonPhase {
     required this.illuminatedFraction,
     required this.elongationDeg,
     required this.waxing,
+    this.phaseAngleDeg = 0,
   });
 
   /// 0 = new, 1 = full.
@@ -220,6 +221,16 @@ class MoonPhase {
   /// Sun–Moon ecliptic longitude difference in [0, 360): 0 new, 180 full.
   final double elongationDeg;
   final bool waxing;
+
+  /// Sun–Moon–Earth angle: 0 at full, 180 at new.
+  final double phaseAngleDeg;
+
+  /// Apparent visual magnitude: about −12.7 at full, −10 at quarter, much
+  /// fainter as a crescent (Allen's empirical fit).
+  double get magnitude {
+    final i = phaseAngleDeg.abs();
+    return -12.73 + 0.026 * i + 4e-9 * i * i * i * i;
+  }
 
   /// Age-like progress through the lunation, 0..1.
   double get cycle => elongationDeg / 360;
@@ -253,6 +264,7 @@ MoonPhase moonPhase(double jdTT) {
     illuminatedFraction: (1 + cosD(i)) / 2,
     elongationDeg: elong,
     waxing: elong < 180,
+    phaseAngleDeg: i,
   );
 }
 

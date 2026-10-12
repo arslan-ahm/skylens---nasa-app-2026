@@ -124,7 +124,7 @@ class SkyEngine {
         kind: SkyObjectKind.moon,
         equatorial: moon.equatorial,
         horizontal: place(moon.equatorial, distanceKm: moon.distanceKm),
-        magnitude: -12.7,
+        magnitude: moonPhase(jdTT).magnitude,
         distanceKm: moon.distanceKm,
       ),
       for (final p in Planet.values)

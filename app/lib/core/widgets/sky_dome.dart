@@ -163,6 +163,7 @@ class _DomePainter extends CustomPainter {
       canvas.drawPath(path, linePaint);
     }
 
+    final labels = <(SkyObject, Offset, double, Color)>[];
     for (final o in objects) {
       final p = proj.toScreen(o.horizontal);
       final color = colorForObject(o, t);
@@ -183,7 +184,35 @@ class _DomePainter extends CustomPainter {
         );
       }
       if (o.kind != SkyObjectKind.star || o.magnitude < 1.5) {
-        _label(canvas, o.name, p + Offset(radius + 3, -6), color, 11);
+        labels.add((o, p, radius, color));
+      }
+    }
+
+    // Brightest (and the selected object) first; each label tries the right
+    // side, then the left, and is dropped if both collide or leave the dome.
+    labels.sort((a, b) {
+      if (a.$1.id == selectedId) return -1;
+      if (b.$1.id == selectedId) return 1;
+      return a.$1.magnitude.compareTo(b.$1.magnitude);
+    });
+    final placed = <Rect>[];
+    for (final (o, p, radius, color) in labels) {
+      final tp = _layout(o.name, color, 11);
+      for (final at in [
+        p + Offset(radius + 3, -tp.height / 2),
+        p + Offset(-radius - 3 - tp.width, -tp.height / 2),
+      ]) {
+        final rect = (at & tp.size).inflate(1.5);
+        final inside =
+            (rect.topLeft - c).distance < r &&
+            (rect.topRight - c).distance < r &&
+            (rect.bottomLeft - c).distance < r &&
+            (rect.bottomRight - c).distance < r;
+        if (inside && !placed.any(rect.overlaps)) {
+          placed.add(rect);
+          tp.paint(canvas, at);
+          break;
+        }
       }
     }
     canvas.restore();
@@ -207,16 +236,16 @@ class _DomePainter extends CustomPainter {
     }
   }
 
-  void _label(Canvas canvas, String s, Offset at, Color color, double size) {
-    final tp = TextPainter(
-      text: TextSpan(
-        text: s,
-        style: skyText(size, 1.2, size * 0.04).copyWith(color: color),
-      ),
-      textDirection: TextDirection.ltr,
-    )..layout();
-    tp.paint(canvas, at);
-  }
+  TextPainter _layout(String s, Color color, double size) => TextPainter(
+    text: TextSpan(
+      text: s,
+      style: skyText(size, 1.2, size * 0.04).copyWith(color: color),
+    ),
+    textDirection: TextDirection.ltr,
+  )..layout();
+
+  void _label(Canvas canvas, String s, Offset at, Color color, double size) =>
+      _layout(s, color, size).paint(canvas, at);
 
   @override
   bool shouldRepaint(_DomePainter old) =>

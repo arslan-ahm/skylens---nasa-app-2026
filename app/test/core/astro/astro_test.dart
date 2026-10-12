@@ -121,6 +121,18 @@ void main() {
       expect(p.waxing, isTrue);
     });
 
+    test('Moon magnitude follows the phase', () {
+      MoonPhase at(double i) => MoonPhase(
+        illuminatedFraction: (1 + cosD(i)) / 2,
+        elongationDeg: 180 - i,
+        waxing: true,
+        phaseAngleDeg: i,
+      );
+      expect(at(0).magnitude, closeTo(-12.7, 0.05));
+      expect(at(90).magnitude, closeTo(-10.0, 0.2));
+      expect(at(150).magnitude, greaterThan(-7));
+    });
+
     test('topocentric parallax lowers the Moon by up to ~1°', () {
       expect(topocentricAltitude(0, 384400), closeTo(-0.95, 0.02));
       expect(topocentricAltitude(90, 384400), closeTo(90, 1e-9));
