@@ -60,6 +60,19 @@ for (let i = 1; i < lines.length; i++) {
   ]);
 }
 rows.sort((a, b) => a[2] - b[2]);
+
+// HYG lists some multiple stars twice (e.g. Capella's second component, with
+// no name or HIP number). Drop unnamed entries within 0.1° of a brighter
+// named star so the chart doesn't label the same point twice.
+const named = rows.filter((r) => r[4]);
+for (let i = rows.length - 1; i >= 0; i--) {
+  const r = rows[i];
+  if (r[4] || r[7]) continue;
+  const dup = named.some((n) => n[2] <= r[2] &&
+    Math.abs(n[1] - r[1]) < 0.1 &&
+    Math.abs(((n[0] - r[0] + 540) % 360) - 180) * Math.cos(r[1] * Math.PI / 180) < 0.1);
+  if (dup) rows.splice(i, 1);
+}
 writeFileSync(
   `${outDir}/stars.json`,
   JSON.stringify({
