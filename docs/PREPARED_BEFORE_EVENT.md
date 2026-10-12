@@ -17,10 +17,11 @@ This file is our transparent record. We link it from the README and summarise it
 | **Pointing / AR test** ⚑ | `app/lib/core/sensors/`, `app/lib/features/lab/` | Location service with fallback, device orientation → az/alt, compass offset calibration, sky projector (world direction → screen point). |
 | Network layer | `app/lib/core/network/` | dio client, TTL cache-through fetcher, `DataProvenance` metadata. |
 | Storage | `app/lib/core/storage/` | Hive CE boxes (settings, cache, logbook). |
-| Design system | `app/lib/core/theme/`, `app/lib/core/widgets/design_components.dart`, `docs/DESIGN_TOKENS.md` | SkyLens design tokens (flat black/Carbon/Graphite surfaces, Geist 400, ghost pill buttons, stat strip, carousel dots, globe diagram, live indicator), plus night-vision red and high-contrast variants. |
+| Design system | `app/lib/core/theme/`, `app/lib/core/widgets/` (`design_components.dart`, `motion.dart`), `docs/DESIGN_TOKENS.md`, `CLAUDE.md` | "Observatory" tokens (three themes), Inter type scale, motion system (reveal, press, animated values, starfield) and generic components |
+| Brand and app chrome | `app/tool/brand/`, `app/android/.../res`, `app/ios/.../AppIcon.appiconset`, `app/web/`, `app/lib/features/splash/`, `app/lib/features/shell/` | SkyLens logo, launcher icons, native and animated splash, reusable bottom-tab shell (`AppShell`) used to host the Dev Lab |
 | UI kit | `app/lib/core/widgets/` | Cards, attribution badge, empty/error/loading states, object detail sheet, direction hint, observation form, **`SkyDome` all-sky chart** ⚑. |
 | Data clients | `app/lib/data/` | NASA APOD, NeoWs, DONKI, Image & Video Library; Open-Meteo. Mock fixtures in `app/assets/mock/`. |
-| Dev Lab | `app/lib/features/lab/` | Debug screens that check each module on a device. |
+| Dev Lab | `app/lib/features/lab/` | Friendly test screens for each module (Explore, Sky map, Sky camera, Compass, Space news, Sky diary, Settings). |
 | Offline catalog | `app/assets/catalog/`, `app/tool/` | HYG v4.0 stars (mag ≤ 5.5), d3-celestial constellations, plus the build script. |
 | Repo tooling | `.github/`, `docs/` | CI (test, web, APK, Pages), templates, playbook. |
 
@@ -30,7 +31,7 @@ This file is our transparent record. We link it from the README and summarise it
 
 - [ ] Choosing the challenge
 - [ ] Problem statement, solution, and impact (README TODOs)
-- [ ] Product shell, navigation, and challenge-specific screens in `app/lib/features/`
+- [ ] The product's own sections, tabs and challenge-specific screens in `app/lib/features/` (the generic `AppShell` currently hosts the Dev Lab)
 - [ ] Challenge-specific data integrations beyond the generic clients
 - [ ] Any AI explanation feature and its prompts, applied to the challenge
 - [ ] Final branding/copy for the chosen challenge

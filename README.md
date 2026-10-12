@@ -169,7 +169,7 @@ See [docs/TEAM_ROLES.md](docs/TEAM_ROLES.md).
 - Constellation data: d3-celestial (Olaf Frohn), BSD-3-Clause
 - NASA data and imagery: courtesy of NASA. Individual APOD images may be copyrighted by their authors, as noted in the API response.
 - Weather data: Open-Meteo.com, CC BY 4.0
-- Typeface: Geist by Vercel, SIL Open Font License 1.1 (`app/assets/fonts/Geist-OFL.txt`)
+- Typeface: Inter by Rasmus Andersson, SIL Open Font License 1.1 (`app/assets/fonts/Inter-OFL.txt`)
 - Icons in the beginner guide deck: Lucide, ISC License
 - Full package, asset and data licence review: [docs/THIRD_PARTY_NOTICES.md](docs/THIRD_PARTY_NOTICES.md). Licence texts are also in the app (Dev Lab → UI kit → Open-source licences).
 - This project is not endorsed by NASA.

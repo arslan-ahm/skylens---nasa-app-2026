@@ -1,5 +1,7 @@
 # Contributing
 
+**Read [CLAUDE.md](CLAUDE.md) first.** It holds the mandatory experience rules for every change, by a person or an AI assistant: everything animated, friendly and simple, with technical details behind a tap.
+
 ## Branches
 `feat/<short-name>`, `fix/<short-name>`, `docs/<short-name>`, `chore/<short-name>`. Branch from `main` and merge back often (at least every 3 h on hackathon day).
 

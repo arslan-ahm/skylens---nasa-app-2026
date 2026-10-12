@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-Space Apps requires every source to be cited, including open-source and freely available material. This file lists everything SkyLens uses that we did not write. The app also shows the full licence texts under **Dev Lab → UI kit & settings → Open-source licences** (Flutter's `showLicensePage`, which collects every package licence automatically, plus the bundled font and data registered in `app/lib/main.dart`).
+Space Apps requires every source to be cited, including open-source and freely available material. This file lists everything SkyLens uses that we did not write. The app also shows the full licence texts under **Settings → Credits and licences** (Flutter's `showLicensePage`, which collects every package licence automatically, plus the bundled font and data registered in `app/lib/main.dart`).
 
 SkyLens's own code is [MIT](../LICENSE). Last reviewed: 2026-10-11. Re-run the review if `pubspec.lock` changes.
 
@@ -32,7 +32,7 @@ All 121 resolved packages (direct, dev and transitive) are under permissive OSI 
 
 | Asset | Path | Author | Licence | Obligation |
 |---|---|---|---|---|
-| Geist typeface | `app/assets/fonts/Geist-Regular.ttf` | Vercel | SIL OFL 1.1 | Ship the licence with the font: `Geist-OFL.txt`, also shown on the in-app licence page |
+| Inter typeface (4 weights) | `app/assets/fonts/Inter-*.ttf` | Rasmus Andersson / The Inter Project Authors | SIL OFL 1.1 | Ship the licence with the font: `Inter-OFL.txt`, also shown on the in-app licence page |
 | HYG star database v4.0 (subset, mag ≤ 5.5) | `app/assets/catalog/stars.json` | David Nash (astronexus) | CC BY-SA 4.0 | Attribute it; changes to the **data file** stay CC BY-SA |
 | Constellation lines | `app/assets/catalog/constellations.json` | Olaf Frohn (d3-celestial) | BSD-3-Clause | Keep the copyright notice |
 | Mock API fixtures | `app/assets/mock/` | NASA, Open-Meteo responses | Same as the live source (below) | Same as the source |
