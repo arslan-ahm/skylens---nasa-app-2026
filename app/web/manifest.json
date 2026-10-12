@@ -1,11 +1,11 @@
 {
-    "name": "skylens",
-    "short_name": "skylens",
+    "name": "SkyLens",
+    "short_name": "SkyLens",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "SkyLens - personal observatory",
+    "background_color": "#070A12",
+    "theme_color": "#070A12",
+    "description": "SkyLens: a free personal observatory. Sky map, AR sky view and NASA data.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
