@@ -91,19 +91,14 @@ class _ObservationFormState extends State<ObservationForm> {
             decoration: const InputDecoration(labelText: 'Notes (optional)'),
           ),
           const SizedBox(height: 24),
-          Row(
-            children: [
-              const CategoryTag('Sky conditions'),
-              const Spacer(),
-              Text(
-                _skyLabels[_sky - 1],
-                style: skyText(
-                  14,
-                  1.43,
-                  0.28,
-                ).copyWith(color: SkyTokens.of(context).ink),
-              ),
-            ],
+          SectionLabel(
+            'Sky conditions',
+            padding: const EdgeInsets.only(left: 4),
+            trailing: Text(
+              _skyLabels[_sky - 1],
+              style: Theme.of(context).textTheme.labelLarge!
+                  .copyWith(color: SkyTokens.of(context).primary),
+            ),
           ),
           Slider(
             value: _sky.toDouble(),
@@ -113,9 +108,10 @@ class _ObservationFormState extends State<ObservationForm> {
             label: _skyLabels[_sky - 1],
             onChanged: (v) => setState(() => _sky = v.round()),
           ),
-          const SizedBox(height: 8),
-          const CategoryTag('Equipment'),
-          const SizedBox(height: 12),
+          const SectionLabel(
+            'Equipment',
+            padding: EdgeInsets.only(left: 4, top: Space.sm, bottom: Space.md),
+          ),
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -128,13 +124,11 @@ class _ObservationFormState extends State<ObservationForm> {
                 ),
             ],
           ),
-          const SizedBox(height: 28),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: GhostPillButton(
-              label: 'Save observation',
-              onPressed: _submit,
-            ),
+          const SizedBox(height: Space.xl),
+          FilledButton.icon(
+            onPressed: _submit,
+            icon: const Icon(Icons.check, size: 18),
+            label: const Text('Save observation'),
           ),
         ],
       ),

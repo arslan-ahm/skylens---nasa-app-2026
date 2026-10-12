@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 import '../network/provenance.dart';
 import '../theme/app_theme.dart';
 import 'design_components.dart';
+import 'motion.dart';
 import 'source_badge.dart';
 
-/// DESIGN_TOKENS.md card surface: flat Graphite, 20px radius, no border or shadow.
-/// Optional line icon, title, subtitle, body, category tag and an
-/// attribution footer.
+/// Standard content card: optional icon badge, title, subtitle, trailing
+/// action, body, and an attribution footer for any data it shows.
 class SkyCard extends StatelessWidget {
   const SkyCard({
     super.key,
     required this.title,
     this.subtitle,
     this.icon,
+    this.tone = Tone.primary,
     this.trailing,
     this.child,
-    this.category,
     this.provenance,
     this.onTap,
   });
@@ -24,11 +24,9 @@ class SkyCard extends StatelessWidget {
   final String title;
   final String? subtitle;
   final IconData? icon;
+  final Tone tone;
   final Widget? trailing;
   final Widget? child;
-
-  /// Small uppercase tag at the bottom ("Planet", "Live data"...).
-  final String? category;
   final DataProvenance? provenance;
   final VoidCallback? onTap;
 
@@ -36,49 +34,47 @@ class SkyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = SkyTokens.of(context);
     final text = Theme.of(context).textTheme;
-    return Card(
+    final card = Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(Space.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (icon != null) ...[
+                    IconBadge(icon!, tone: tone, size: 36),
+                    const SizedBox(width: Space.md),
+                  ],
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (icon != null) ...[
-                          Icon(icon, color: t.ink, size: 24),
-                          const SizedBox(height: 16),
-                        ],
-                        Text(title, style: text.titleLarge),
-                        if (subtitle != null) ...[
-                          const SizedBox(height: 4),
+                        Semantics(
+                          header: true,
+                          child: Text(title, style: text.titleMedium),
+                        ),
+                        if (subtitle != null)
                           Text(
                             subtitle!,
-                            style: text.bodyLarge!.copyWith(color: t.inkMuted),
+                            style: text.bodyMedium!.copyWith(
+                              color: t.textMuted,
+                            ),
                           ),
-                        ],
                       ],
                     ),
                   ),
                   ?trailing,
                 ],
               ),
-              if (child != null) ...[const SizedBox(height: 16), child!],
-              if (category != null) ...[
-                const SizedBox(height: 16),
-                CategoryTag(category!),
-              ],
+              if (child != null) ...[const SizedBox(height: Space.md), child!],
               if (provenance != null) ...[
-                const SizedBox(height: 16),
+                const SizedBox(height: Space.md),
                 const Divider(),
-                const SizedBox(height: 8),
+                const SizedBox(height: Space.sm),
                 SourceBadge(provenance!),
               ],
             ],
@@ -86,32 +82,55 @@ class SkyCard extends StatelessWidget {
         ),
       ),
     );
+    return onTap == null ? card : Pressable(child: card);
   }
 }
 
-/// A label/value pair on a hairline ("Magnitude ........ −2.4").
+/// Label / value row ("Magnitude ........ −2.4"), numbers in tabular figures.
 class FactRow extends StatelessWidget {
-  const FactRow(this.label, this.value, {super.key});
+  const FactRow(this.label, this.value, {super.key, this.divider = true});
 
   final String label;
   final String value;
+  final bool divider;
 
   @override
   Widget build(BuildContext context) {
     final t = SkyTokens.of(context);
-    final style = skyText(16, 1.6, 0.4);
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: t.hairline)),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(label, style: style.copyWith(color: t.inkMuted)),
+    final text = Theme.of(context).textTheme;
+    return Semantics(
+      label: '$label: $value',
+      child: ExcludeSemantics(
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 44),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: divider
+              ? BoxDecoration(
+                  border: Border(bottom: BorderSide(color: t.outline)),
+                )
+              : null,
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  label,
+                  style: text.bodyMedium!.copyWith(color: t.textMuted),
+                ),
+              ),
+              const SizedBox(width: Space.md),
+              Flexible(
+                child: Text(
+                  value,
+                  textAlign: TextAlign.end,
+                  style: text.bodyMedium!.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontFeatures: kTabularFigures,
+                  ),
+                ),
+              ),
+            ],
           ),
-          Text(value, style: style.copyWith(color: t.ink)),
-        ],
+        ),
       ),
     );
   }

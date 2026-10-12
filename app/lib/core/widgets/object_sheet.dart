@@ -10,8 +10,7 @@ import 'direction_hint.dart';
 import 'sky_card.dart';
 import 'source_badge.dart';
 
-/// Sky-chart colour for an object (monochrome in Space; tinted in the
-/// accessibility themes).
+/// Sky-chart colour for an object.
 Color colorForObject(SkyObject o, SkyTokens t) => switch (o.kind) {
   SkyObjectKind.sun => t.sun,
   SkyObjectKind.moon => t.moon,
@@ -64,23 +63,55 @@ class _ObjectSheetBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = SkyTokens.of(context);
     final text = Theme.of(context).textTheme;
     final hm = DateFormat.Hm();
     String fmt(DateTime? d) => d == null ? '—' : hm.format(d.toLocal());
 
     return ListView(
       controller: scroll,
-      padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
+      padding: const EdgeInsets.fromLTRB(Space.xl, 0, Space.xl, Space.xxl),
       children: [
-        CategoryTag(kindLabel(o)),
-        const SizedBox(height: 8),
-        Semantics(
-          header: true,
-          child: Text(o.name, style: text.headlineMedium),
+        Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: colorForObject(o, t).withValues(alpha: 0.14),
+                borderRadius: BorderRadius.circular(Radii.md),
+              ),
+              child: Icon(iconForObject(o), color: colorForObject(o, t)),
+            ),
+            const SizedBox(width: Space.lg),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Semantics(
+                    header: true,
+                    child: Text(o.name, style: text.headlineSmall),
+                  ),
+                  Text(
+                    kindLabel(o),
+                    style: text.bodyMedium!.copyWith(color: t.textMuted),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 24),
-        DirectionHint(o.horizontal),
-        const SizedBox(height: 16),
+        const SizedBox(height: Space.xl),
+        Container(
+          padding: const EdgeInsets.all(Space.lg),
+          decoration: BoxDecoration(
+            color: t.surface,
+            borderRadius: BorderRadius.circular(Radii.lg),
+            border: Border.all(color: t.outline, width: t.strokeWidth),
+          ),
+          child: DirectionHint(o.horizontal),
+        ),
+        const SectionLabel('Position'),
         FactRow('Altitude', '${o.horizontal.alt.toStringAsFixed(1)}°'),
         FactRow(
           'Azimuth',
@@ -95,6 +126,7 @@ class _ObjectSheetBody extends StatelessWidget {
                 : '${NumberFormat.decimalPattern().format(o.distanceKm!.round())} km',
           ),
         if (rs != null) ...[
+          const SectionLabel('Today'),
           if (rs!.alwaysUp)
             const FactRow('Visibility', 'Up all day (circumpolar)'),
           if (rs!.alwaysDown)
@@ -108,7 +140,7 @@ class _ObjectSheetBody extends StatelessWidget {
             '${fmt(rs!.transit)} at ${rs!.transitAltitude.toStringAsFixed(0)}°',
           ),
         ],
-        const SizedBox(height: 16),
+        const SizedBox(height: Space.lg),
         SourceBadge(
           DataProvenance(
             source: 'SkyLens astronomy engine',

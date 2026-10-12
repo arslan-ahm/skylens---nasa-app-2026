@@ -26,8 +26,8 @@ Future<void> main() async {
 void _registerAssetLicenses() {
   LicenseRegistry.addLicense(() async* {
     yield LicenseEntryWithLineBreaks([
-      'Geist font',
-    ], await rootBundle.loadString('assets/fonts/Geist-OFL.txt'));
+      'Inter font',
+    ], await rootBundle.loadString('assets/fonts/Inter-OFL.txt'));
     yield const LicenseEntryWithLineBreaks(
       ['HYG star database v4.0'],
       '''

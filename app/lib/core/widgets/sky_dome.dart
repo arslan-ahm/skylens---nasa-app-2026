@@ -129,13 +129,12 @@ class _DomePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final c = proj.centre, r = proj.radius;
-    // DESIGN_TOKENS.md globe visualization: Deep Navy wash, Concentric Teal rings.
     canvas.drawCircle(
       c,
       r,
       Paint()
         ..shader = RadialGradient(
-          colors: [t.wash, t.wash.withValues(alpha: 0.35)],
+          colors: [Color.lerp(t.chartBg, t.primary, 0.08)!, t.chartBg],
         ).createShader(Rect.fromCircle(center: c, radius: r)),
     );
     canvas.save();
@@ -145,7 +144,7 @@ class _DomePainter extends CustomPainter {
     final grid = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1
-      ..color = t.diagram;
+      ..color = t.chartGrid;
     canvas.drawCircle(c, r * 2 / 3, grid);
     canvas.drawCircle(c, r / 3, grid);
 
@@ -180,7 +179,7 @@ class _DomePainter extends CustomPainter {
           Paint()
             ..style = PaintingStyle.stroke
             ..strokeWidth = 1.5
-            ..color = t.live,
+            ..color = t.primary,
         );
       }
       if (o.kind != SkyObjectKind.star || o.magnitude < 1.5) {
@@ -232,14 +231,20 @@ class _DomePainter extends CustomPainter {
       ('W', 270.0),
     ]) {
       final p = proj.toScreen(Horizontal(az, -10));
-      _label(canvas, label, p - const Offset(4, 7), t.ink, 13);
+      _label(canvas, label, p - const Offset(4, 7), t.textMuted, 12);
     }
   }
 
   TextPainter _layout(String s, Color color, double size) => TextPainter(
     text: TextSpan(
       text: s,
-      style: skyText(size, 1.2, size * 0.04).copyWith(color: color),
+      style: TextStyle(
+        fontFamily: kFontFamily,
+        fontSize: size,
+        height: 1.2,
+        fontWeight: FontWeight.w500,
+        color: color,
+      ),
     ),
     textDirection: TextDirection.ltr,
   )..layout();

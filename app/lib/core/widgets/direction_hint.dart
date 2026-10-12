@@ -59,7 +59,7 @@ class DirectionHint extends StatelessWidget {
             Expanded(
               child: Text(
                 directionSentence(target),
-                style: skyText(16, 1.6, 0.4).copyWith(color: t.ink),
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
           ],
@@ -85,7 +85,7 @@ class _CompassPainter extends CustomPainter {
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1
-        ..color = t.inkMuted,
+        ..color = t.border,
     );
     canvas.drawCircle(
       c,
@@ -93,7 +93,7 @@ class _CompassPainter extends CustomPainter {
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1
-        ..color = t.diagram,
+        ..color = t.chartGrid,
     );
 
     // Altitude as distance from the rim (rim = horizon, centre = zenith).
@@ -104,17 +104,21 @@ class _CompassPainter extends CustomPainter {
       c,
       p,
       Paint()
-        ..color = t.ink.withValues(alpha: 0.4)
+        ..color = t.primary.withValues(alpha: 0.5)
         ..strokeWidth = 1,
     );
-    canvas.drawCircle(c, 2, Paint()..color = t.ink);
-    // The target is the active element: Signal Mint.
-    canvas.drawCircle(p, 4.5, Paint()..color = t.live);
+    canvas.drawCircle(c, 2, Paint()..color = t.textMuted);
+    canvas.drawCircle(p, 5, Paint()..color = t.primary);
 
     final tp = TextPainter(
       text: TextSpan(
         text: 'N',
-        style: skyText(11, 1.2, 0.4).copyWith(color: t.ink),
+        style: TextStyle(
+          fontFamily: kFontFamily,
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+          color: t.textMuted,
+        ),
       ),
       textDirection: TextDirection.ltr,
     )..layout();

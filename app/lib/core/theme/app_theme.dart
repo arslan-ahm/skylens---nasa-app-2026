@@ -1,95 +1,128 @@
+import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 
-// SkyLens design system (docs/DESIGN_TOKENS.md):
-// - near-black canvas, white type doing all the work, one typeface (Geist)
-//   at weight 400 only, with positive letter-spacing at every size;
-// - flat elevation by tone only: Void #000 -> Carbon #181818 (bars) ->
-//   Graphite #1E1F20 (cards); hairlines in Iron #333; no shadows or blur;
-// - ghost (outlined) pill buttons, never filled;
-// - colour only in diagrams (Concentric Teal, Deep Navy) and Signal Mint
-//   reserved for live / active state.
+// SkyLens "Observatory" design system (docs/DESIGN_TOKENS.md).
 //
-// Night-vision red and high-contrast keep the same structure with
-// accessibility palettes.
+// - Deep blue-black canvas with two raised tones (surface, surfaceHigh);
+//   depth comes from tone and 1px outlines, not shadows.
+// - One typeface (Inter) with a real weight hierarchy: 600 for titles,
+//   500 for labels, 400 for reading text; tabular figures for numbers.
+// - One accent (starlight blue) for primary actions and selection; status
+//   colours (success / warning / danger) always come with an icon or word.
+// - Every variant is dark: bright screens ruin night vision. Night-vision
+//   red and high contrast keep the same roles with accessibility palettes.
+//
+// All text pairs meet WCAG AA (4.5:1); control borders meet 3:1.
 
-/// Theme variants. All are dark: bright screens ruin night vision.
-/// (`space` keeps its name so saved settings stay valid.)
+/// Theme variants. (`space` keeps its name so saved settings stay valid.)
 enum SkyThemeVariant { space, nightRed, highContrast }
 
 extension SkyThemeVariantLabel on SkyThemeVariant {
   String get label => switch (this) {
-    SkyThemeVariant.space => 'Space',
-    SkyThemeVariant.nightRed => 'Night vision (red)',
+    SkyThemeVariant.space => 'Standard',
+    SkyThemeVariant.nightRed => 'Night vision',
     SkyThemeVariant.highContrast => 'High contrast',
+  };
+
+  IconData get icon => switch (this) {
+    SkyThemeVariant.space => Icons.dark_mode_outlined,
+    SkyThemeVariant.nightRed => Icons.visibility_outlined,
+    SkyThemeVariant.highContrast => Icons.contrast,
   };
 }
 
-const kFontFamily = 'Geist';
+const kFontFamily = 'Inter';
 
-/// Design tokens. Widgets read these via `SkyTokens.of(context)` so the
-/// night-red mode can recolour everything, including canvas drawings.
+/// Numbers that update live (coordinates, times) shouldn't jitter.
+const kTabularFigures = [FontFeature.tabularFigures()];
+
+/// 4-pt spacing scale.
+abstract final class Space {
+  static const double xs = 4;
+  static const double sm = 8;
+  static const double md = 12;
+  static const double lg = 16;
+  static const double xl = 24;
+  static const double xxl = 32;
+
+  /// Horizontal screen gutter.
+  static const double gutter = 20;
+}
+
+abstract final class Radii {
+  static const double sm = 8;
+  static const double md = 12;
+  static const double lg = 16;
+  static const double xl = 24;
+}
+
+/// Semantic colour roles. Widgets read these via `SkyTokens.of(context)` so
+/// the night-vision theme recolours everything, including canvas drawings.
 @immutable
 class SkyTokens extends ThemeExtension<SkyTokens> {
   const SkyTokens({
-    required this.sky,
-    required this.carbon,
+    required this.bg,
     required this.surface,
-    required this.surfaceRaised,
-    required this.hairline,
-    required this.ink,
-    required this.inkMuted,
-    required this.inkFaint,
-    required this.accent,
-    required this.live,
-    required this.diagram,
-    required this.wash,
+    required this.surfaceHigh,
+    required this.outline,
+    required this.border,
+    required this.text,
+    required this.textMuted,
+    required this.textFaint,
+    required this.primary,
+    required this.onPrimary,
+    required this.primaryContainer,
+    required this.onPrimaryContainer,
+    required this.success,
+    required this.warning,
+    required this.danger,
+    required this.chartBg,
+    required this.chartGrid,
     required this.star,
     required this.planet,
     required this.moon,
     required this.sun,
     required this.constellation,
     required this.horizon,
-    required this.warning,
+    required this.accents,
     this.strokeWidth = 1,
   });
 
-  /// Void: page canvas.
-  final Color sky;
+  /// Screen background.
+  final Color bg;
 
-  /// Carbon: app bars, nav bars, sheets.
-  final Color carbon;
-
-  /// Graphite: cards, panels.
+  /// Cards, list groups.
   final Color surface;
 
-  /// Inputs and controls sitting on cards.
-  final Color surfaceRaised;
+  /// Sheets, dialogs, inputs, selected segments.
+  final Color surfaceHigh;
 
-  /// Iron: hairline borders and dividers.
-  final Color hairline;
+  /// Decorative dividers and card outlines.
+  final Color outline;
 
-  /// Primary text and icon strokes.
-  final Color ink;
+  /// Interactive control boundaries (inputs, outlined buttons): ≥ 3:1.
+  final Color border;
 
-  /// Slate: genuine de-emphasis only.
-  final Color inkMuted;
+  final Color text;
 
-  /// Fog / Ash: disabled, tertiary metadata, recessed outlines.
-  final Color inkFaint;
+  /// Secondary text. Still ≥ 4.5:1, so it can carry information.
+  final Color textMuted;
 
-  /// Primary action colour (white: actions are outlined, not coloured).
-  final Color accent;
+  /// Disabled text and placeholders only.
+  final Color textFaint;
 
-  /// Signal Mint: live data and active state only.
-  final Color live;
+  final Color primary;
+  final Color onPrimary;
+  final Color primaryContainer;
+  final Color onPrimaryContainer;
 
-  /// Concentric Teal: diagram strokes.
-  final Color diagram;
+  final Color success;
+  final Color warning;
+  final Color danger;
 
-  /// Deep Navy: atmospheric wash behind diagrams only.
-  final Color wash;
-
-  // Sky-chart colours (infographic elements).
+  // Sky chart and AR overlay.
+  final Color chartBg;
+  final Color chartGrid;
   final Color star;
   final Color planet;
   final Color moon;
@@ -97,80 +130,117 @@ class SkyTokens extends ThemeExtension<SkyTokens> {
   final Color constellation;
   final Color horizon;
 
-  /// Errors. Always paired with text: colour never carries meaning alone.
-  final Color warning;
+  /// Friendly hues for feature tiles and illustrations (one per feature).
+  /// Decorative only: never the sole carrier of meaning.
+  final List<Color> accents;
 
-  /// Border width for outlined controls (thicker in high contrast).
+  /// Border width for controls (thicker in high contrast).
   final double strokeWidth;
 
   static SkyTokens of(BuildContext context) =>
       Theme.of(context).extension<SkyTokens>()!;
 
   static const space = SkyTokens(
-    sky: Color(0xFF000000),
-    carbon: Color(0xFF181818),
-    surface: Color(0xFF1E1F20),
-    surfaceRaised: Color(0xFF1E1F20),
-    hairline: Color(0xFF333333),
-    ink: Color(0xFFFFFFFF),
-    inkMuted: Color(0xFF807F7F),
-    inkFaint: Color(0xFF666666),
-    accent: Color(0xFFFFFFFF),
-    live: Color(0xFF22E2A8),
-    diagram: Color(0xFF085556),
-    wash: Color(0xFF0A2142),
-    star: Color(0xFFFFFFFF),
-    planet: Color(0xFFFFFFFF),
-    moon: Color(0xFFF1F4F4),
-    sun: Color(0xFFFFFFFF),
-    constellation: Color(0x59FFFFFF),
-    horizon: Color(0xFFFFFFFF),
-    warning: Color(0xFFF1F4F4),
+    bg: Color(0xFF070A12),
+    surface: Color(0xFF0E1424),
+    surfaceHigh: Color(0xFF161D30),
+    outline: Color(0xFF26304A),
+    border: Color(0xFF5B6886),
+    text: Color(0xFFEDF1F8),
+    textMuted: Color(0xFF9AA5BA),
+    textFaint: Color(0xFF6A7590),
+    primary: Color(0xFF7EA6FF),
+    onPrimary: Color(0xFF07122E),
+    primaryContainer: Color(0xFF18284D),
+    onPrimaryContainer: Color(0xFFD3E0FF),
+    success: Color(0xFF45D49A),
+    warning: Color(0xFFF5C15C),
+    danger: Color(0xFFFF8080),
+    chartBg: Color(0xFF0B1530),
+    chartGrid: Color(0x337EA6FF),
+    star: Color(0xFFF4F6FB),
+    planet: Color(0xFFF5C15C),
+    moon: Color(0xFFE9E6DA),
+    sun: Color(0xFFFFCF66),
+    constellation: Color(0x667EA6FF),
+    horizon: Color(0xFF9AA5BA),
+    accents: [
+      Color(0xFF7EA6FF), // blue
+      Color(0xFFB49CFF), // violet
+      Color(0xFF4FD1C5), // teal
+      Color(0xFFF5C15C), // amber
+      Color(0xFFFF8FB8), // pink
+      Color(0xFF45D49A), // green
+    ],
   );
 
-  /// Everything in deep red: preserves dark adaptation at the eyepiece.
+  /// Red only, low luminance: protects dark adaptation at the eyepiece.
   static const nightRed = SkyTokens(
-    sky: Color(0xFF000000),
-    carbon: Color(0xFF0D0000),
-    surface: Color(0xFF140303),
-    surfaceRaised: Color(0xFF140303),
-    hairline: Color(0xFF3A0B0B),
-    ink: Color(0xFFE53935),
-    inkMuted: Color(0xFF9A2622),
-    inkFaint: Color(0xFF6B1A17),
-    accent: Color(0xFFE53935),
-    live: Color(0xFFFF6E6E),
-    diagram: Color(0xFF5C1210),
-    wash: Color(0xFF1A0303),
+    bg: Color(0xFF000000),
+    surface: Color(0xFF140404),
+    surfaceHigh: Color(0xFF1E0606),
+    outline: Color(0xFF3A0B0B),
+    border: Color(0xFFA02B2B),
+    text: Color(0xFFFF5C5C),
+    textMuted: Color(0xFFDD5050),
+    textFaint: Color(0xFF8A2525),
+    primary: Color(0xFFFF5C5C),
+    onPrimary: Color(0xFF000000),
+    primaryContainer: Color(0xFF3A0B0B),
+    onPrimaryContainer: Color(0xFFFF8A8A),
+    success: Color(0xFFFF8A8A),
+    warning: Color(0xFFFF5C5C),
+    danger: Color(0xFFFF3D3D),
+    chartBg: Color(0xFF0A0101),
+    chartGrid: Color(0x55A02B2B),
     star: Color(0xFFFF6E6E),
     planet: Color(0xFFFF8A80),
     moon: Color(0xFFFF7961),
     sun: Color(0xFFFF5252),
     constellation: Color(0x66B71C1C),
     horizon: Color(0xFFB71C1C),
-    warning: Color(0xFFFF1744),
+    accents: [
+      Color(0xFFFF5C5C),
+      Color(0xFFFF7A7A),
+      Color(0xFFE05555),
+      Color(0xFFFF8A8A),
+      Color(0xFFFF6B6B),
+      Color(0xFFFF5C5C),
+    ],
   );
 
   static const highContrast = SkyTokens(
-    sky: Color(0xFF000000),
-    carbon: Color(0xFF000000),
+    bg: Color(0xFF000000),
     surface: Color(0xFF000000),
-    surfaceRaised: Color(0xFF111111),
-    hairline: Color(0xFFFFFFFF),
-    ink: Color(0xFFFFFFFF),
-    inkMuted: Color(0xFFE0E0E0),
-    inkFaint: Color(0xFFBDBDBD),
-    accent: Color(0xFFFFFFFF),
-    live: Color(0xFFFFEB3B),
-    diagram: Color(0xFF00E5FF),
-    wash: Color(0xFF000000),
+    surfaceHigh: Color(0xFF0D0D0D),
+    outline: Color(0xFFFFFFFF),
+    border: Color(0xFFFFFFFF),
+    text: Color(0xFFFFFFFF),
+    textMuted: Color(0xFFE6E6E6),
+    textFaint: Color(0xFFBDBDBD),
+    primary: Color(0xFFFFD60A),
+    onPrimary: Color(0xFF000000),
+    primaryContainer: Color(0xFF3D3300),
+    onPrimaryContainer: Color(0xFFFFE97A),
+    success: Color(0xFF5CFF9D),
+    warning: Color(0xFFFFD60A),
+    danger: Color(0xFFFF6B6B),
+    chartBg: Color(0xFF000000),
+    chartGrid: Color(0x99FFFFFF),
     star: Color(0xFFFFFFFF),
-    planet: Color(0xFFFFEB3B),
+    planet: Color(0xFFFFD60A),
     moon: Color(0xFFFFFFFF),
-    sun: Color(0xFFFFEB3B),
+    sun: Color(0xFFFFD60A),
     constellation: Color(0xCC00E5FF),
     horizon: Color(0xFFFFFFFF),
-    warning: Color(0xFFFFEB3B),
+    accents: [
+      Color(0xFFFFD60A),
+      Color(0xFF00E5FF),
+      Color(0xFFFFFFFF),
+      Color(0xFFFFD60A),
+      Color(0xFF00E5FF),
+      Color(0xFFFFFFFF),
+    ],
     strokeWidth: 2,
   );
 
@@ -182,33 +252,34 @@ class SkyTokens extends ThemeExtension<SkyTokens> {
       t < 0.5 ? this : (other ?? this);
 }
 
-/// One step of the DESIGN_TOKENS.md type scale: weight 400, positive tracking.
-TextStyle skyText(double size, double height, double tracking) => TextStyle(
-  fontFamily: kFontFamily,
-  fontSize: size,
-  height: height,
-  letterSpacing: tracking,
-  fontWeight: FontWeight.w400,
-);
+TextStyle _t(double size, double height, FontWeight w, [double ls = 0]) =>
+    TextStyle(
+      fontFamily: kFontFamily,
+      fontSize: size,
+      height: height / size,
+      fontWeight: w,
+      letterSpacing: ls,
+    );
 
-/// DESIGN_TOKENS.md type scale mapped onto Material roles.
-TextTheme _textTheme(Color ink) => TextTheme(
-  displayLarge: skyText(60, 1.13, 2.4), // display
-  displayMedium: skyText(36, 1.13, 0.9), // heading
-  displaySmall: skyText(32, 1.25, 0.8), // heading-sm
-  headlineLarge: skyText(36, 1.13, 0.9),
-  headlineMedium: skyText(32, 1.25, 0.8),
-  headlineSmall: skyText(24, 1.33, 0.6), // subheading
-  titleLarge: skyText(24, 1.33, 0.6),
-  titleMedium: skyText(16, 1.6, 0.4), // body
-  titleSmall: skyText(14, 1.43, 0.28),
-  bodyLarge: skyText(16, 1.6, 0.4),
-  bodyMedium: skyText(14, 1.43, 0.28), // body-sm
-  bodySmall: skyText(12, 1.5, 0.24), // caption
-  labelLarge: skyText(16, 1.6, 0.4),
-  labelMedium: skyText(14, 1.43, 0.28),
-  labelSmall: skyText(12, 1.5, 0.24),
-).apply(bodyColor: ink, displayColor: ink);
+const _regular = FontWeight.w400;
+const _medium = FontWeight.w500;
+const _semi = FontWeight.w600;
+
+/// Type scale (size / line height / weight / tracking).
+TextTheme _textTheme(SkyTokens t) => TextTheme(
+  displaySmall: _t(32, 40, _semi, -0.6),
+  headlineMedium: _t(28, 36, _semi, -0.4),
+  headlineSmall: _t(24, 32, _semi, -0.3),
+  titleLarge: _t(20, 28, _semi, -0.2),
+  titleMedium: _t(16, 24, _semi),
+  titleSmall: _t(14, 20, _semi),
+  bodyLarge: _t(16, 24, _regular),
+  bodyMedium: _t(14, 20, _regular, 0.1),
+  bodySmall: _t(12, 16, _regular, 0.2).copyWith(color: t.textMuted),
+  labelLarge: _t(14, 20, _semi, 0.1),
+  labelMedium: _t(12, 16, _medium, 0.3),
+  labelSmall: _t(11, 16, _semi, 0.8),
+).apply(bodyColor: t.text, displayColor: t.text);
 
 ThemeData buildSkyTheme(SkyThemeVariant variant) {
   final t = switch (variant) {
@@ -216,50 +287,43 @@ ThemeData buildSkyTheme(SkyThemeVariant variant) {
     SkyThemeVariant.nightRed => SkyTokens.nightRed,
     SkyThemeVariant.highContrast => SkyTokens.highContrast,
   };
-  final text = _textTheme(t.ink);
+  final text = _textTheme(t);
   final scheme = ColorScheme.dark(
-    surface: t.sky,
-    surfaceContainerLowest: t.sky,
-    surfaceContainerLow: t.carbon,
+    surface: t.bg,
+    surfaceContainerLowest: t.bg,
+    surfaceContainerLow: t.surface,
     surfaceContainer: t.surface,
-    surfaceContainerHigh: t.surface,
-    surfaceContainerHighest: t.surface,
-    primary: t.accent,
-    onPrimary: t.sky,
-    secondary: t.ink,
-    onSecondary: t.sky,
-    tertiary: t.live,
-    onSurface: t.ink,
-    onSurfaceVariant: t.inkMuted,
-    error: t.warning,
-    onError: t.sky,
-    outline: t.hairline,
-    outlineVariant: t.hairline,
+    surfaceContainerHigh: t.surfaceHigh,
+    surfaceContainerHighest: t.surfaceHigh,
+    primary: t.primary,
+    onPrimary: t.onPrimary,
+    primaryContainer: t.primaryContainer,
+    onPrimaryContainer: t.onPrimaryContainer,
+    secondary: t.primary,
+    onSecondary: t.onPrimary,
+    secondaryContainer: t.primaryContainer,
+    onSecondaryContainer: t.onPrimaryContainer,
+    tertiary: t.success,
+    onSurface: t.text,
+    onSurfaceVariant: t.textMuted,
+    error: t.danger,
+    onError: t.bg,
+    outline: t.border,
+    outlineVariant: t.outline,
   );
-  final hairline = BorderSide(color: t.hairline, width: t.strokeWidth);
-  final inkLine = BorderSide(color: t.ink, width: t.strokeWidth);
-  final overlay = WidgetStatePropertyAll(t.ink.withValues(alpha: 0.08));
+  final outlineSide = BorderSide(color: t.outline, width: t.strokeWidth);
+  final borderSide = BorderSide(color: t.border, width: t.strokeWidth);
+  final overlay = WidgetStatePropertyAll(t.text.withValues(alpha: 0.08));
+  final rounded = RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(Radii.md),
+  );
+  // 48 dp minimum: usable with gloves and cold fingers.
+  const buttonSize = Size(64, 48);
+  const buttonPadding = EdgeInsets.symmetric(horizontal: 20, vertical: 12);
 
-  // The canonical action: transparent, 1px white border, pill, 10x30 padding.
-  // Min height 48 keeps targets usable with gloves and cold fingers.
-  final ghostPill = ButtonStyle(
-    foregroundColor: WidgetStateProperty.resolveWith(
-      (s) => s.contains(WidgetState.disabled) ? t.inkFaint : t.ink,
-    ),
-    backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
-    side: WidgetStateProperty.resolveWith(
-      (s) => s.contains(WidgetState.disabled)
-          ? BorderSide(color: t.inkFaint, width: t.strokeWidth)
-          : inkLine,
-    ),
-    shape: const WidgetStatePropertyAll(StadiumBorder()),
-    padding: const WidgetStatePropertyAll(
-      EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-    ),
-    minimumSize: const WidgetStatePropertyAll(Size(64, 48)),
-    textStyle: WidgetStatePropertyAll(skyText(16, 1.6, 0.4)),
-    elevation: const WidgetStatePropertyAll(0),
-    overlayColor: overlay,
+  OutlineInputBorder input(Color c, [double extra = 0]) => OutlineInputBorder(
+    borderRadius: BorderRadius.circular(Radii.md),
+    borderSide: BorderSide(color: c, width: t.strokeWidth + extra),
   );
 
   return ThemeData(
@@ -268,35 +332,47 @@ ThemeData buildSkyTheme(SkyThemeVariant variant) {
     colorScheme: scheme,
     fontFamily: kFontFamily,
     textTheme: text,
-    scaffoldBackgroundColor: t.sky,
-    canvasColor: t.sky,
-    splashColor: t.ink.withValues(alpha: 0.06),
-    highlightColor: Colors.transparent,
-    dividerColor: t.hairline,
+    scaffoldBackgroundColor: t.bg,
+    canvasColor: t.bg,
+    splashFactory: InkRipple.splashFactory,
+    dividerColor: t.outline,
     extensions: [t],
+    visualDensity: VisualDensity.standard,
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.windows: FadeForwardsPageTransitionsBuilder(),
+        TargetPlatform.linux: FadeForwardsPageTransitionsBuilder(),
+        TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+      },
+    ),
     appBarTheme: AppBarTheme(
-      backgroundColor: t.carbon,
-      foregroundColor: t.ink,
+      backgroundColor: t.bg,
+      foregroundColor: t.text,
       elevation: 0,
       scrolledUnderElevation: 0,
       surfaceTintColor: Colors.transparent,
       centerTitle: false,
-      titleTextStyle: skyText(16, 1.6, 0.4).copyWith(color: t.ink),
-      shape: Border(bottom: hairline),
+      titleSpacing: 4,
+      titleTextStyle: text.titleLarge,
+      shape: Border(bottom: outlineSide),
     ),
     navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: t.carbon,
+      backgroundColor: t.surface,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
-      indicatorColor: t.surface,
+      indicatorColor: t.primaryContainer,
       iconTheme: WidgetStateProperty.resolveWith(
         (s) => IconThemeData(
-          color: s.contains(WidgetState.selected) ? t.ink : t.inkMuted,
+          color: s.contains(WidgetState.selected)
+              ? t.onPrimaryContainer
+              : t.textMuted,
         ),
       ),
       labelTextStyle: WidgetStateProperty.resolveWith(
-        (s) => skyText(12, 1.5, 0.24).copyWith(
-          color: s.contains(WidgetState.selected) ? t.ink : t.inkMuted,
+        (s) => text.labelMedium!.copyWith(
+          color: s.contains(WidgetState.selected) ? t.text : t.textMuted,
         ),
       ),
     ),
@@ -306,161 +382,206 @@ ThemeData buildSkyTheme(SkyThemeVariant variant) {
       margin: EdgeInsets.zero,
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: t.strokeWidth > 1 ? hairline : BorderSide.none,
+        borderRadius: BorderRadius.circular(Radii.lg),
+        side: outlineSide,
       ),
     ),
-    filledButtonTheme: FilledButtonThemeData(style: ghostPill),
-    outlinedButtonTheme: OutlinedButtonThemeData(style: ghostPill),
-    elevatedButtonTheme: ElevatedButtonThemeData(style: ghostPill),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: t.primary,
+        foregroundColor: t.onPrimary,
+        disabledBackgroundColor: t.surfaceHigh,
+        disabledForegroundColor: t.textFaint,
+        minimumSize: buttonSize,
+        padding: buttonPadding,
+        shape: rounded,
+        textStyle: text.labelLarge,
+      ),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: t.primaryContainer,
+        foregroundColor: t.onPrimaryContainer,
+        elevation: 0,
+        minimumSize: buttonSize,
+        padding: buttonPadding,
+        shape: rounded,
+        textStyle: text.labelLarge,
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: t.text,
+        disabledForegroundColor: t.textFaint,
+        side: borderSide,
+        minimumSize: buttonSize,
+        padding: buttonPadding,
+        shape: rounded,
+        textStyle: text.labelLarge,
+      ).copyWith(overlayColor: overlay),
+    ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: t.ink,
-        textStyle: skyText(16, 1.6, 0.4),
-        shape: const StadiumBorder(),
+        foregroundColor: t.primary,
         minimumSize: const Size(48, 48),
-      ).copyWith(overlayColor: overlay),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        shape: rounded,
+        textStyle: text.labelLarge,
+      ),
     ),
     iconButtonTheme: IconButtonThemeData(
       style: IconButton.styleFrom(
-        foregroundColor: t.ink,
+        foregroundColor: t.text,
         minimumSize: const Size(48, 48),
       ).copyWith(overlayColor: overlay),
     ),
-    iconTheme: IconThemeData(color: t.ink, size: 24),
+    iconTheme: IconThemeData(color: t.text, size: 24),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: t.sky,
-      foregroundColor: t.ink,
+      backgroundColor: t.primary,
+      foregroundColor: t.onPrimary,
       elevation: 0,
       focusElevation: 0,
       hoverElevation: 0,
       highlightElevation: 0,
-      shape: StadiumBorder(side: inkLine),
-      extendedTextStyle: skyText(16, 1.6, 0.4),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Radii.lg),
+      ),
+      extendedTextStyle: text.labelLarge,
     ),
     listTileTheme: ListTileThemeData(
-      iconColor: t.ink,
-      textColor: t.ink,
-      titleTextStyle: skyText(16, 1.6, 0.4).copyWith(color: t.ink),
-      subtitleTextStyle: skyText(14, 1.43, 0.28).copyWith(color: t.inkMuted),
-      minVerticalPadding: 12,
+      iconColor: t.textMuted,
+      textColor: t.text,
+      titleTextStyle: text.titleSmall,
+      subtitleTextStyle: text.bodyMedium!.copyWith(color: t.textMuted),
+      contentPadding: const EdgeInsets.symmetric(horizontal: Space.lg),
+      minVerticalPadding: Space.md,
+      shape: rounded,
     ),
     bottomSheetTheme: BottomSheetThemeData(
-      backgroundColor: t.carbon,
-      modalBackgroundColor: t.carbon,
+      backgroundColor: t.surfaceHigh,
+      modalBackgroundColor: t.surfaceHigh,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       modalElevation: 0,
       showDragHandle: true,
-      dragHandleColor: t.inkFaint,
+      dragHandleColor: t.border,
+      modalBarrierColor: Colors.black.withValues(alpha: 0.6),
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(Radii.xl)),
       ),
     ),
     dialogTheme: DialogThemeData(
-      backgroundColor: t.carbon,
+      backgroundColor: t.surfaceHigh,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(30),
-        side: hairline,
+        borderRadius: BorderRadius.circular(Radii.xl),
+        side: outlineSide,
       ),
-      titleTextStyle: skyText(24, 1.33, 0.6).copyWith(color: t.ink),
-      contentTextStyle: skyText(16, 1.6, 0.4).copyWith(color: t.inkMuted),
+      titleTextStyle: text.titleLarge,
+      contentTextStyle: text.bodyMedium!.copyWith(color: t.textMuted),
     ),
     inputDecorationTheme: InputDecorationTheme(
-      filled: false,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      labelStyle: skyText(16, 1.6, 0.4).copyWith(color: t.inkMuted),
-      floatingLabelStyle: skyText(14, 1.43, 0.28).copyWith(color: t.ink),
-      hintStyle: skyText(16, 1.6, 0.4).copyWith(color: t.inkFaint),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: hairline,
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: hairline,
-      ),
-      // Focus is an active state: Signal Mint.
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide(color: t.live, width: t.strokeWidth + 0.5),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide(color: t.warning, width: t.strokeWidth),
-      ),
-      errorStyle: skyText(12, 1.5, 0.24).copyWith(color: t.warning),
+      filled: true,
+      fillColor: t.surfaceHigh,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      labelStyle: text.bodyLarge!.copyWith(color: t.textMuted),
+      floatingLabelStyle: text.bodyMedium!.copyWith(color: t.primary),
+      hintStyle: text.bodyLarge!.copyWith(color: t.textFaint),
+      helperStyle: text.bodySmall,
+      border: input(t.border),
+      enabledBorder: input(t.border),
+      focusedBorder: input(t.primary, 1),
+      errorBorder: input(t.danger),
+      focusedErrorBorder: input(t.danger, 1),
+      errorStyle: text.bodySmall!.copyWith(color: t.danger),
     ),
     textSelectionTheme: TextSelectionThemeData(
-      cursorColor: t.live,
-      selectionColor: t.live.withValues(alpha: 0.3),
-      selectionHandleColor: t.live,
+      cursorColor: t.primary,
+      selectionColor: t.primary.withValues(alpha: 0.3),
+      selectionHandleColor: t.primary,
     ),
-    dividerTheme: DividerThemeData(color: t.hairline, space: 1, thickness: 1),
+    dividerTheme: DividerThemeData(color: t.outline, space: 1, thickness: 1),
     chipTheme: ChipThemeData(
-      backgroundColor: Colors.transparent,
-      selectedColor: Colors.transparent,
-      disabledColor: Colors.transparent,
-      showCheckmark: false,
-      shape: const StadiumBorder(),
-      side: WidgetStateBorderSide.resolveWith(
-        (s) => s.contains(WidgetState.selected) ? inkLine : hairline,
+      backgroundColor: t.surface,
+      selectedColor: t.primaryContainer,
+      disabledColor: t.surface,
+      checkmarkColor: t.onPrimaryContainer,
+      showCheckmark: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Radii.sm),
       ),
-      // M3 chips use labelStyle when unselected, secondaryLabelStyle when
-      // selected.
-      labelStyle: skyText(14, 1.43, 0.28).copyWith(color: t.inkMuted),
-      secondaryLabelStyle: skyText(14, 1.43, 0.28).copyWith(color: t.ink),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      side: WidgetStateBorderSide.resolveWith(
+        (s) => s.contains(WidgetState.selected)
+            ? BorderSide(color: t.primaryContainer, width: t.strokeWidth)
+            : borderSide,
+      ),
+      // M3 chips use labelStyle unselected, secondaryLabelStyle selected.
+      labelStyle: text.labelLarge!.copyWith(color: t.text),
+      secondaryLabelStyle: text.labelLarge!.copyWith(
+        color: t.onPrimaryContainer,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
     ),
     sliderTheme: SliderThemeData(
-      trackHeight: 2,
-      activeTrackColor: t.ink,
-      inactiveTrackColor: t.hairline,
-      thumbColor: t.ink,
-      overlayColor: t.ink.withValues(alpha: 0.1),
+      trackHeight: 4,
+      activeTrackColor: t.primary,
+      inactiveTrackColor: t.surfaceHigh,
+      thumbColor: t.primary,
+      overlayColor: t.primary.withValues(alpha: 0.12),
       activeTickMarkColor: Colors.transparent,
       inactiveTickMarkColor: Colors.transparent,
-      valueIndicatorColor: t.surface,
-      valueIndicatorTextStyle: skyText(14, 1.43, 0.28).copyWith(color: t.ink),
+      valueIndicatorColor: t.primaryContainer,
+      valueIndicatorTextStyle: text.labelLarge!.copyWith(
+        color: t.onPrimaryContainer,
+      ),
+      showValueIndicator: ShowValueIndicator.onDrag,
     ),
     segmentedButtonTheme: SegmentedButtonThemeData(
       style: SegmentedButton.styleFrom(
-        foregroundColor: t.inkMuted,
-        selectedForegroundColor: t.ink,
-        selectedBackgroundColor: t.surface,
-        side: hairline,
-        textStyle: skyText(14, 1.43, 0.28),
-        shape: const StadiumBorder(),
+        foregroundColor: t.textMuted,
+        selectedForegroundColor: t.onPrimaryContainer,
+        selectedBackgroundColor: t.primaryContainer,
+        side: borderSide,
+        textStyle: text.labelLarge,
+        minimumSize: const Size(0, 48),
+        shape: rounded,
       ),
     ),
     switchTheme: SwitchThemeData(
-      thumbColor: WidgetStatePropertyAll(t.ink),
-      trackColor: WidgetStateProperty.resolveWith(
-        (s) => s.contains(WidgetState.selected) ? t.live : t.surface,
+      thumbColor: WidgetStateProperty.resolveWith(
+        (s) => s.contains(WidgetState.selected) ? t.onPrimary : t.textMuted,
       ),
-      trackOutlineColor: WidgetStatePropertyAll(t.hairline),
+      trackColor: WidgetStateProperty.resolveWith(
+        (s) => s.contains(WidgetState.selected) ? t.primary : t.surfaceHigh,
+      ),
+      trackOutlineColor: WidgetStateProperty.resolveWith(
+        (s) => s.contains(WidgetState.selected) ? t.primary : t.border,
+      ),
     ),
     progressIndicatorTheme: ProgressIndicatorThemeData(
-      color: t.ink,
-      linearTrackColor: t.hairline,
+      color: t.primary,
+      linearTrackColor: t.surfaceHigh,
       circularTrackColor: Colors.transparent,
     ),
     snackBarTheme: SnackBarThemeData(
-      backgroundColor: t.surface,
-      contentTextStyle: skyText(14, 1.43, 0.28).copyWith(color: t.ink),
-      actionTextColor: t.ink,
+      backgroundColor: t.surfaceHigh,
+      contentTextStyle: text.bodyMedium,
+      actionTextColor: t.primary,
       behavior: SnackBarBehavior.floating,
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Radii.md),
+        side: outlineSide,
+      ),
     ),
     tooltipTheme: TooltipThemeData(
       decoration: BoxDecoration(
-        color: t.surface,
-        borderRadius: BorderRadius.circular(10),
+        color: t.surfaceHigh,
+        borderRadius: BorderRadius.circular(Radii.sm),
+        border: Border.fromBorderSide(outlineSide),
       ),
-      textStyle: skyText(12, 1.5, 0.24).copyWith(color: t.ink),
+      textStyle: text.bodySmall!.copyWith(color: t.text),
     ),
   );
 }
