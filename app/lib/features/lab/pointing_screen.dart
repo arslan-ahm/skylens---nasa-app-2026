@@ -109,7 +109,7 @@ class _PointingScreenState extends ConsumerState<PointingScreen>
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(title: const Text('Pointing / AR test')),
+      appBar: AppBar(title: const Text('Sky camera')),
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -128,7 +128,7 @@ class _PointingScreenState extends ConsumerState<PointingScreen>
             Center(
               child: Text(
                 _cameraError ?? 'Starting camera…',
-                style: TextStyle(color: t.inkMuted),
+                style: TextStyle(color: t.textMuted),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -165,28 +165,57 @@ class _PointingScreenState extends ConsumerState<PointingScreen>
           // Centre reticle.
           IgnorePointer(
             child: Center(
-              child: Icon(Icons.add, color: t.ink, size: 32, weight: 200),
+              child: Icon(Icons.add, color: t.text, size: 32, weight: 200),
             ),
           ),
           Positioned(
-            left: 12,
-            right: 12,
-            bottom: 12,
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
+            left: Space.md,
+            right: Space.md,
+            bottom: Space.md,
+            child: SafeArea(
+              top: false,
+              child: Container(
+                padding: const EdgeInsets.all(Space.lg),
+                decoration: BoxDecoration(
+                  color: t.surfaceHigh.withValues(alpha: 0.94),
+                  borderRadius: BorderRadius.circular(Radii.xl),
+                  border: Border.all(color: t.outline, width: t.strokeWidth),
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      pose == null
-                          ? 'No orientation sensors (web/emulator?)'
-                          : 'Pointing ${pose.cameraDirection.az.toStringAsFixed(0)}° ${pose.cameraDirection.compassPoint}, '
-                                '${pose.cameraDirection.alt.toStringAsFixed(0)}° up',
-                    ),
+                    if (pose == null)
+                      Text(
+                        'No orientation sensors. Test on a phone, not the '
+                        'web build or an emulator.',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      )
+                    else
+                      MetricRow([
+                        MetricTile(
+                          label: 'Facing',
+                          value:
+                              '${pose.cameraDirection.az.toStringAsFixed(0)}° '
+                              '${pose.cameraDirection.compassPoint}',
+                          icon: Icons.explore_outlined,
+                          tone: Tone.primary,
+                        ),
+                        MetricTile(
+                          label: 'Tilt',
+                          value:
+                              '${pose.cameraDirection.alt.toStringAsFixed(0)}° up',
+                          icon: Icons.height,
+                          tone: Tone.primary,
+                        ),
+                      ]),
+                    const SizedBox(height: Space.sm),
                     Row(
                       children: [
-                        const CategoryTag('FOV'),
+                        Text(
+                          'Field of view',
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
                         Expanded(
                           child: Slider(
                             value: settings.cameraFovDeg,
@@ -199,12 +228,19 @@ class _PointingScreenState extends ConsumerState<PointingScreen>
                                 .update((s) => s.copyWith(cameraFovDeg: v)),
                           ),
                         ),
+                        Text(
+                          '${settings.cameraFovDeg.round()}°',
+                          style: const TextStyle(fontFeatures: kTabularFigures),
+                        ),
                       ],
                     ),
                     if (pose != null && calibTarget != null)
-                      GhostPillButton(
+                      FilledButton.icon(
                         onPressed: () => _calibrate(pose, calibTarget),
-                        label: 'Centre ${calibTarget.name} & calibrate',
+                        icon: const Icon(Icons.my_location, size: 18),
+                        label: Text(
+                          'Centre ${calibTarget.name}, then calibrate',
+                        ),
                       ),
                   ],
                 ),
@@ -267,11 +303,13 @@ class _OverlayPainter extends CustomPainter {
           text: TextSpan(
             text: o.name,
             // Shadow only for legibility over the camera image.
-            style: skyText(
-              13,
-              1.2,
-              0.5,
-            ).copyWith(color: color, shadows: const [Shadow(blurRadius: 3)]),
+            style: TextStyle(
+              fontFamily: kFontFamily,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: color,
+              shadows: const [Shadow(blurRadius: 4)],
+            ),
           ),
           textDirection: TextDirection.ltr,
         )..layout();

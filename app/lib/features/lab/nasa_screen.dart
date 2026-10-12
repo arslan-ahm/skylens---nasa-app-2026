@@ -6,6 +6,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/providers.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/design_components.dart';
+import '../../core/widgets/motion.dart';
 import '../../core/widgets/sky_card.dart';
 import '../../core/widgets/source_badge.dart';
 import '../../core/widgets/states.dart';
@@ -43,7 +45,7 @@ class NasaScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('NASA & open data'),
+        title: const Text('Space news'),
         actions: [
           IconButton(
             tooltip: 'Reload',
@@ -58,14 +60,19 @@ class NasaScreen extends ConsumerWidget {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
+        padding: const EdgeInsets.fromLTRB(
+          Space.gutter,
+          Space.lg,
+          Space.gutter,
+          Space.xxl,
+        ),
+        children: staggered([
           AsyncView(
             value: ref.watch(_apodProvider),
             onRetry: () => ref.invalidate(_apodProvider),
             builder: (r) => SkyCard(
               title: r.data.title,
-              subtitle: 'Astronomy Picture of the Day · ${r.data.date}',
+              subtitle: 'Space picture of the day · ${r.data.date}',
               icon: Icons.photo_outlined,
               provenance: r.provenance,
               child: Column(
@@ -73,7 +80,7 @@ class NasaScreen extends ConsumerWidget {
                 children: [
                   if (r.data.hasUsableImage)
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(Radii.md),
                       child: CachedNetworkImage(
                         imageUrl: r.data.url,
                         height: 200,
@@ -85,7 +92,7 @@ class NasaScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: Space.md),
                   Text(
                     r.data.explanation,
                     maxLines: 4,
@@ -96,19 +103,19 @@ class NasaScreen extends ConsumerWidget {
                       onPressed: () => launchUrl(Uri.parse(Apod.webPage)),
                       icon: const Icon(Icons.open_in_new, size: 18),
                       label: const Text(
-                        'Image unavailable from API — view on science.nasa.gov',
+                        "See today's picture on NASA's website",
                       ),
                     ),
                   if (r.data.copyright != null)
                     Text(
                       '© ${r.data.copyright}',
-                      style: TextStyle(color: t.inkMuted, fontSize: 12),
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.md),
           AsyncView(
             value: ref.watch(_weatherProvider),
             builder: (r) {
@@ -117,10 +124,12 @@ class NasaScreen extends ConsumerWidget {
                   .take(12)
                   .toList();
               return SkyCard(
-                title: 'Sky conditions, next 12 h',
+                title: 'Will the sky be clear?',
+                subtitle: 'Next 12 hours · taller bars mean clearer sky',
                 icon: Icons.cloud_outlined,
                 provenance: r.provenance,
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     for (final h in next)
                       Expanded(
@@ -130,19 +139,24 @@ class NasaScreen extends ConsumerWidget {
                           child: Column(
                             children: [
                               Container(
-                                height: 40 * h.clearSkyScore + 4,
+                                height: 48 * h.clearSkyScore + 4,
                                 margin: const EdgeInsets.symmetric(
-                                  horizontal: 1,
+                                  horizontal: 2,
                                 ),
-                                color: Color.lerp(
-                                  t.inkMuted,
-                                  t.horizon,
-                                  h.clearSkyScore,
+                                decoration: BoxDecoration(
+                                  color: Color.lerp(
+                                    t.surfaceHigh,
+                                    t.primary,
+                                    h.clearSkyScore,
+                                  ),
+                                  borderRadius: BorderRadius.circular(3),
                                 ),
                               ),
+                              const SizedBox(height: Space.xs),
                               Text(
                                 DateFormat.H().format(h.time.toLocal()),
-                                style: const TextStyle(fontSize: 10),
+                                style: Theme.of(context).textTheme.bodySmall!
+                                    .copyWith(fontSize: 11),
                               ),
                             ],
                           ),
@@ -153,32 +167,33 @@ class NasaScreen extends ConsumerWidget {
               );
             },
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.md),
           AsyncView(
             value: ref.watch(_neoProvider),
             builder: (r) => SkyCard(
-              title: 'Asteroid close approaches',
-              subtitle: '${r.data.length} in the next 3 days',
-              icon: Icons.blur_on,
+              title: 'Asteroids flying by',
+              subtitle: '${r.data.length} pass Earth in the next 3 days',
+              icon: Icons.track_changes,
               provenance: r.provenance,
               child: Column(
                 children: [
                   for (final n in r.data.take(5))
                     FactRow(
-                      '${n.name}${n.isPotentiallyHazardous ? ' ⚠' : ''}',
-                      '${n.missDistanceLunar.toStringAsFixed(1)} LD · ${n.diameterMinM.round()}–${n.diameterMaxM.round()} m',
+                      '${n.name}${n.isPotentiallyHazardous ? ' · hazardous' : ''}',
+                      '${n.missDistanceLunar.toStringAsFixed(1)}× Moon distance · ${n.diameterMinM.round()}–${n.diameterMaxM.round()} m',
                     ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.md),
           AsyncView(
             value: ref.watch(_donkiProvider),
             builder: (r) => SkyCard(
-              title: 'Space weather (DONKI)',
-              subtitle: '${r.data.length} notifications in 7 days',
+              title: 'Space weather',
+              subtitle: '${r.data.length} solar events this week',
               icon: Icons.flare,
+              tone: Tone.warning,
               provenance: r.provenance,
               child: Column(
                 children: [
@@ -188,30 +203,29 @@ class NasaScreen extends ConsumerWidget {
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.md),
           AsyncView(
             value: ref.watch(_imagesProvider('jupiter')),
             builder: (r) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'NASA Image Library: "jupiter"',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 8),
+                const SectionLabel('Pictures of Jupiter'),
                 GridView.count(
                   crossAxisCount: 3,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  mainAxisSpacing: 4,
-                  crossAxisSpacing: 4,
+                  mainAxisSpacing: Space.xs,
+                  crossAxisSpacing: Space.xs,
                   children: [
                     for (final img in r.data)
                       Tooltip(
                         message: img.title,
-                        child: CachedNetworkImage(
-                          imageUrl: img.previewUrl,
-                          fit: BoxFit.cover,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(Radii.sm),
+                          child: CachedNetworkImage(
+                            imageUrl: img.previewUrl,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                   ],
@@ -220,7 +234,7 @@ class NasaScreen extends ConsumerWidget {
               ],
             ),
           ),
-        ],
+        ]),
       ),
     );
   }

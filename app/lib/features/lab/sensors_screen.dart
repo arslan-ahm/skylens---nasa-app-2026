@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers.dart';
 import '../../core/settings/app_settings.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/widgets/direction_hint.dart';
+import '../../core/widgets/motion.dart';
 import '../../core/widgets/sky_card.dart';
 import '../../core/widgets/states.dart';
 
@@ -17,13 +19,18 @@ class SensorsScreen extends ConsumerWidget {
     final settings = ref.watch(appSettingsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Sensors')),
+      appBar: AppBar(title: const Text('Compass')),
       body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
+        padding: const EdgeInsets.fromLTRB(
+          Space.gutter,
+          Space.lg,
+          Space.gutter,
+          Space.xxl,
+        ),
+        children: staggered([
           SkyCard(
-            title: 'Location',
-            icon: Icons.my_location,
+            title: 'Where you are',
+            icon: Icons.my_location_outlined,
             trailing: IconButton(
               tooltip: 'Refresh',
               icon: const Icon(Icons.refresh),
@@ -43,11 +50,11 @@ class SensorsScreen extends ConsumerWidget {
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.md),
           SkyCard(
-            title: 'Device pose',
-            subtitle: 'Accelerometer + magnetometer, low-pass filtered',
-            icon: Icons.explore,
+            title: 'Where your phone points',
+            subtitle: 'Move your phone and watch it follow',
+            icon: Icons.explore_outlined,
             child: pose.when(
               data: (p) {
                 final cam = p.cameraDirection;
@@ -71,17 +78,24 @@ class SensorsScreen extends ConsumerWidget {
                   ],
                 );
               },
-              loading: () => const Text(
-                'Waiting for sensors… (no magnetometer on web/emulators — test on a phone)',
+              loading: () => const LoadingState(
+                message:
+                    'Waiting for sensors. Web builds and emulators have no '
+                    'magnetometer, so test on a phone.',
               ),
               error: (e, _) => Text('Sensor error: $e'),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.md),
           SkyCard(
-            title: 'Compass offset',
-            subtitle: 'Magnetic declination + calibration (east positive)',
+            title: 'Fine-tune the compass',
+            subtitle: 'Nudge it if the sky looks a little off',
             icon: Icons.tune,
+            trailing: Text(
+              '${settings.compassOffsetDeg.toStringAsFixed(1)}°',
+              style: Theme.of(context).textTheme.titleMedium!
+                  .copyWith(fontFeatures: kTabularFigures),
+            ),
             child: Slider(
               value: settings.compassOffsetDeg.clamp(-30, 30),
               min: -30,
@@ -93,7 +107,7 @@ class SensorsScreen extends ConsumerWidget {
                   .update((s) => s.copyWith(compassOffsetDeg: v)),
             ),
           ),
-        ],
+        ]),
       ),
     );
   }

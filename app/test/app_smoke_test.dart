@@ -23,12 +23,14 @@ void main() {
     tester.view.devicePixelRatio = 2;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(_wrap(const LabHomeScreen()));
+    await tester.pump(const Duration(seconds: 1));
     for (final title in [
-      'Sky engine',
-      'Pointing / AR test',
-      'Sensors',
-      'NASA & open data',
-      'Logbook',
+      'Sky map',
+      'Sky camera',
+      'Compass',
+      'Space news',
+      'Sky diary',
+      'Settings',
     ]) {
       expect(find.text(title), findsOneWidget);
     }
@@ -37,8 +39,14 @@ void main() {
   testWidgets('every theme variant builds', (tester) async {
     for (final v in SkyThemeVariant.values) {
       await tester.pumpWidget(
-        MaterialApp(theme: buildSkyTheme(v), home: const LabHomeScreen()),
+        ProviderScope(
+          child: MaterialApp(
+            theme: buildSkyTheme(v),
+            home: const LabHomeScreen(),
+          ),
+        ),
       );
+      await tester.pump(const Duration(seconds: 1));
       expect(find.byType(LabHomeScreen), findsOneWidget);
     }
   });
